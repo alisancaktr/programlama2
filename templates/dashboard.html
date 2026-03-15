@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Folio — Ana Sayfa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0a0a;
+      --surface:  #141414;
+      --surface2: #1a1a1a;
+      --border:   rgba(255,255,255,0.07);
+      --accent:   #e8c97e;
+      --accent2:  #b87f4b;
+      --text:     #f0ece4;
+      --muted:    rgba(240,236,228,0.45);
+      --muted2:   rgba(240,236,228,0.22);
+      --film:     #7eb5e8;
+      --series:   #a87ee8;
+      --book:     #7ee8b0;
+      --r:        10px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px;
+    }
+
+    /* ═══════════════════════════
+       NAVBAR
+    ═══════════════════════════ */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; gap: 2rem;
+      padding: 0 2.5rem;
+      height: 58px;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-links {
+      display: flex; gap: 0.2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8rem; font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+    .nav-search {
+      flex: 1;
+      display: flex; align-items: center;
+      gap: 0.6rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      max-width: 320px;
+      margin-left: auto;
+      transition: border-color 0.2s;
+    }
+    .nav-search:focus-within { border-color: rgba(232,201,126,0.4); }
+    .nav-search svg { color: var(--muted2); flex-shrink: 0; }
+    .nav-search input {
+      background: none; border: none; outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem; color: var(--text);
+      width: 100%;
+    }
+    .nav-search input::placeholder { color: var(--muted2); }
+    .nav-right {
+      display: flex; align-items: center; gap: 0.8rem; margin-left: 1rem;
+    }
+    .nav-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: #0a0a0a;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .nav-avatar:hover { border-color: var(--accent); }
+    .nav-username { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
+    .logout-link {
+      font-size: 0.75rem; font-weight: 500;
+      color: var(--muted2);
+      text-decoration: none;
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .logout-link:hover { color: #d97070; border-color: rgba(217,112,112,0.35); }
+
+    /* ═══════════════════════════
+       HERO
+    ═══════════════════════════ */
+    .hero {
+      position: relative;
+      padding: 5rem 2.5rem 4rem;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 50%, rgba(184,127,75,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 20% 30%, rgba(126,181,232,0.06) 0%, transparent 55%);
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr auto; gap: 3rem; align-items: center;
+    }
+    .hero-greeting {
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      animation: fadeUp 0.6s 0.08s ease both;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-sub {
+      font-size: 0.9rem; color: var(--muted); line-height: 1.7;
+      max-width: 480px;
+      animation: fadeUp 0.6s 0.16s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 0.8rem; margin-top: 1.8rem;
+      animation: fadeUp 0.6s 0.22s ease both;
+    }
+    .btn { padding: 0.7rem 1.4rem; border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: none; text-decoration: none; transition: opacity 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-gold { background: var(--accent); color: #0a0a0a; }
+    .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+
+    /* Stats row */
+    .hero-stats {
+      display: flex; gap: 2.5rem;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-top: 0.3rem;
+    }
+    .stat-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      margin-right: 0.4rem; vertical-align: middle;
+    }
+
+    /* ═══════════════════════════
+       MAIN LAYOUT
+    ═══════════════════════════ */
+    .container {
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 2.5rem;
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2.5rem;
+      padding: 2.5rem 0 4rem;
+    }
+
+    /* ── Section headings ── */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 700;
+    }
+    .section-title span {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+      margin-left: 0.7rem;
+    }
+    .see-all {
+      font-size: 0.75rem; font-weight: 500;
+      color: var(--accent); text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: opacity 0.2s;
+    }
+    .see-all:hover { opacity: 0.7; }
+
+    /* ═══════════════════════════
+       ACTIVITY FEED
+    ═══════════════════════════ */
+    .feed { display: flex; flex-direction: column; gap: 1px; margin-bottom: 2.5rem; }
+
+    .feed-item {
+      display: flex; gap: 1rem;
+      padding: 1rem 1.1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      margin-bottom: 6px;
+      transition: border-color 0.2s;
+      animation: fadeUp 0.5s ease both;
+    }
+    .feed-item:hover { border-color: rgba(255,255,255,0.14); }
+    .feed-item:nth-child(1) { animation-delay: 0.1s; }
+    .feed-item:nth-child(2) { animation-delay: 0.18s; }
+    .feed-item:nth-child(3) { animation-delay: 0.26s; }
+    .feed-item:nth-child(4) { animation-delay: 0.34s; }
+
+    .feed-poster {
+      width: 46px; flex-shrink: 0;
+      border-radius: 5px; overflow: hidden;
+      aspect-ratio: 2/3;
+      background: var(--surface2);
+      position: relative;
+    }
+    .feed-poster-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .feed-body { flex: 1; min-width: 0; }
+    .feed-meta {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.3rem;
+    }
+    .feed-user {
+      font-size: 0.8rem; font-weight: 600; color: var(--text);
+    }
+    .feed-action {
+      font-size: 0.78rem; color: var(--muted);
+    }
+    .feed-type-badge {
+      font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.15rem 0.5rem; border-radius: 99px;
+      margin-left: auto;
+    }
+    .type-film   { background: rgba(126,181,232,0.15); color: var(--film); }
+    .type-series { background: rgba(168,126,232,0.15); color: var(--series); }
+    .type-book   { background: rgba(126,232,176,0.15); color: var(--book); }
+
+    .feed-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .feed-year { font-size: 0.72rem; color: var(--muted); margin-left: 0.4rem; }
+
+    .feed-stars {
+      display: flex; gap: 1px; margin: 0.3rem 0;
+    }
+    .star { font-size: 0.75rem; }
+    .star.filled { color: var(--accent); }
+    .star.empty  { color: var(--muted2); }
+
+    .feed-review {
+      font-size: 0.8rem; color: var(--muted); line-height: 1.55;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .feed-time { font-size: 0.68rem; color: var(--muted2); margin-top: 0.35rem; }
+
+    /* ═══════════════════════════
+       POSTER GRID (Popular)
+    ═══════════════════════════ */
+    .poster-scroll {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.7rem;
+      margin-bottom: 2.5rem;
+    }
+    .poster-card {
+      position: relative; border-radius: 7px; overflow: hidden;
+      aspect-ratio: 2/3;
+      background: var(--surface2);
+      cursor: pointer;
+      transition: transform 0.22s;
+      animation: fadeUp 0.5s ease both;
+    }
+    .poster-card:hover { transform: translateY(-4px) scale(1.02); }
+    .poster-card:nth-child(1) { animation-delay: 0.05s; }
+    .poster-card:nth-child(2) { animation-delay: 0.10s; }
+    .poster-card:nth-child(3) { animation-delay: 0.15s; }
+    .poster-card:nth-child(4) { animation-delay: 0.20s; }
+    .poster-card:nth-child(5) { animation-delay: 0.25s; }
+
+    .poster-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+    .poster-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg, rgba(10,10,10,0.9) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.22s;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 0.7rem;
+    }
+    .poster-card:hover .poster-overlay { opacity: 1; }
+    .poster-overlay-title {
+      font-size: 0.75rem; font-weight: 600; line-height: 1.3;
+    }
+    .poster-overlay-meta {
+      font-size: 0.62rem; color: var(--muted); margin-top: 0.2rem;
+    }
+    .poster-rating {
+      position: absolute; top: 0.5rem; right: 0.5rem;
+      background: rgba(10,10,10,0.8);
+      backdrop-filter: blur(6px);
+      font-size: 0.68rem; font-weight: 600;
+      color: var(--accent);
+      padding: 0.2rem 0.45rem; border-radius: 4px;
+    }
+    .poster-type-dot {
+      position: absolute; top: 0.5rem; left: 0.5rem;
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+
+    /* ═══════════════════════════
+       SIDEBAR
+    ═══════════════════════════ */
+    .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.2rem;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+    .sidebar-card-title {
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    /* Profile card */
+    .profile-top {
+      display: flex; align-items: center; gap: 0.9rem;
+      margin-bottom: 1.2rem;
+    }
+    .profile-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; color: #0a0a0a;
+      flex-shrink: 0;
+    }
+    .profile-name { font-size: 0.95rem; font-weight: 600; }
+    .profile-handle { font-size: 0.75rem; color: var(--muted); }
+    .profile-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem; text-align: center;
+      padding-top: 1rem; border-top: 1px solid var(--border);
+    }
+    .ps-num { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+    .ps-lbl { font-size: 0.62rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 0.1rem; }
+    .ps-film   { color: var(--film); }
+    .ps-series { color: var(--series); }
+    .ps-book   { color: var(--book); }
+
+    /* Recent / watchlist */
+    .mini-list { display: flex; flex-direction: column; gap: 0.7rem; }
+    .mini-item {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .mini-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .mini-icon {
+      width: 34px; height: 34px; border-radius: 5px;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .mini-title { font-size: 0.82rem; font-weight: 500; }
+    .mini-meta  { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
+    .mini-stars { display: flex; gap: 1px; }
+    .mini-star  { font-size: 0.6rem; }
+    .mini-star.f { color: var(--accent); }
+    .mini-star.e { color: var(--muted2); }
+
+    /* Tags cloud */
+    .tags { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .tag {
+      font-size: 0.7rem; font-weight: 500;
+      padding: 0.3rem 0.75rem; border-radius: 99px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer; text-decoration: none;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .tag:hover { background: rgba(232,201,126,0.1); color: var(--accent); border-color: rgba(232,201,126,0.3); }
+
+    /* ═══════════════════════════
+       ANIMATIONS
+    ═══════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════════════════════════
+       RESPONSIVE
+    ═══════════════════════════ */
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .hero-content { grid-template-columns: 1fr; }
+      .hero-stats { display: none; }
+      .poster-scroll { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .container { padding: 0 1rem; }
+      .hero { padding: 3rem 1rem 2.5rem; }
+      .poster-scroll { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav>
+  <a href="/" class="nav-logo">Folio</a>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Keşfet</a></li>
+    <li><a href="#">Filmler</a></li>
+    <li><a href="#">Diziler</a></li>
+    <li><a href="#">Kitaplar</a></li>
+    <li><a href="#">Listeler</a></li>
+  </ul>
+  <div class="nav-search">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" placeholder="Film, dizi, kitap ara…"/>
+  </div>
+  <div class="nav-right">
+    <span class="nav-username">{{ user.username }}</span>
+    <div class="nav-avatar">{{ user.username|slice:":2"|upper }}</div>
+    <a href="{% url 'logout' %}" class="logout-link">Çıkış</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div>
+      <div class="hero-greeting">Tekrar hoş geldin 👋</div>
+      <h1 class="hero-title">
+        Merhaba, <em>{{ user.username }}</em>.<br/>
+        Bugün ne izledin?
+      </h1>
+      <p class="hero-sub">Film, dizi ve kitaplarını kaydet, puanla, arkadaşlarınla paylaş. Kültür günlüğün seni bekliyor.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-gold">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          Yeni Ekle
+        </a>
+        <a href="#" class="btn btn-ghost">Listem</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">24</div>
+        <div class="stat-label"><span class="stat-dot" style="background:var(--film)"></span>Film</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">8</div>
+        <div class="stat-label"><span class="stat-dot" style="background:var(--series)"></span>Dizi</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">12</div>
+        <div class="stat-label"><span class="stat-dot" style="background:var(--book)"></span>Kitap</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MAIN ══ -->
+<div class="container">
+  <div class="main-grid">
+
+    <!-- LEFT — Feed + Popular -->
+    <div>
+
+      <!-- Activity Feed -->
+      <div class="section-head">
+        <div class="section-title">Arkadaşlarının Aktivitesi <span>Son 24 saat</span></div>
+        <a href="#" class="see-all">Tümünü gör →</a>
+      </div>
+      <div class="feed">
+
+        <div class="feed-item">
+          <div class="feed-poster">
+            <div class="feed-poster-placeholder">🎬</div>
+          </div>
+          <div class="feed-body">
+            <div class="feed-meta">
+              <span class="feed-user">ayse_k</span>
+              <span class="feed-action">izledi</span>
+              <span class="feed-type-badge type-film">Film</span>
+            </div>
+            <div class="feed-title">Oppenheimer <span class="feed-year">2023</span></div>
+            <div class="feed-stars">
+              <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+            </div>
+            <div class="feed-review">İnsanlığın en büyük yükünü taşıyan bir adamın portresi. Nolan yine zihin açıyor, ses tasarımı inanılmaz.</div>
+            <div class="feed-time">2 saat önce</div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-poster">
+            <div class="feed-poster-placeholder">📺</div>
+          </div>
+          <div class="feed-body">
+            <div class="feed-meta">
+              <span class="feed-user">mert_yilmaz</span>
+              <span class="feed-action">1. sezonu bitirdi</span>
+              <span class="feed-type-badge type-series">Dizi</span>
+            </div>
+            <div class="feed-title">The Bear <span class="feed-year">2022</span></div>
+            <div class="feed-stars">
+              <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star empty">★</span>
+            </div>
+            <div class="feed-review">Mutfak anksiyetesini bu kadar gerçekçi aktaran başka bir şey görmedim. Nefes almadan izlettiriyor.</div>
+            <div class="feed-time">5 saat önce</div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-poster">
+            <div class="feed-poster-placeholder">📖</div>
+          </div>
+          <div class="feed-body">
+            <div class="feed-meta">
+              <span class="feed-user">zeynep_d</span>
+              <span class="feed-action">okudu</span>
+              <span class="feed-type-badge type-book">Kitap</span>
+            </div>
+            <div class="feed-title">Gece Yarısı Kütüphanesi <span class="feed-year">2020</span></div>
+            <div class="feed-stars">
+              <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star empty">★</span>
+            </div>
+            <div class="feed-review">Matt Haig'in en sürükleyici kitabı. Paralel hayatlar fikri hem melankolik hem umut verici.</div>
+            <div class="feed-time">8 saat önce</div>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-poster">
+            <div class="feed-poster-placeholder">🎬</div>
+          </div>
+          <div class="feed-body">
+            <div class="feed-meta">
+              <span class="feed-user">can_arslan</span>
+              <span class="feed-action">izledi</span>
+              <span class="feed-type-badge type-film">Film</span>
+            </div>
+            <div class="feed-title">Past Lives <span class="feed-year">2023</span></div>
+            <div class="feed-stars">
+              <span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span>
+            </div>
+            <div class="feed-review">Yıllarca hafızada kalacak türden bir film. Celine Song'un ilk filmi bu kadar olgunsa ilerisini düşünemiyorum bile.</div>
+            <div class="feed-time">12 saat önce</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Popular this week -->
+      <div class="section-head" style="margin-top:0.5rem;">
+        <div class="section-title">Bu Hafta Popüler <span>Folio'da</span></div>
+        <a href="#" class="see-all">Tümünü gör →</a>
+      </div>
+      <div class="poster-scroll">
+
+        <div class="poster-card">
+          <div class="poster-placeholder" style="background:linear-gradient(135deg,#1a1a2e,#16213e);">🎬</div>
+          <div class="poster-type-dot" style="background:var(--film)"></div>
+          <div class="poster-rating">4.5</div>
+          <div class="poster-overlay">
+            <div class="poster-overlay-title">Dune: Part Two</div>
+            <div class="poster-overlay-meta">2024 · Film</div>
+          </div>
+        </div>
+
+        <div class="poster-card">
+          <div class="poster-placeholder" style="background:linear-gradient(135deg,#2e1a1a,#3e1616);">📺</div>
+          <div class="poster-type-dot" style="background:var(--series)"></div>
+          <div class="poster-rating">4.8</div>
+          <div class="poster-overlay">
+            <div class="poster-overlay-title">Shogun</div>
+            <div class="poster-overlay-meta">2024 · Dizi</div>
+          </div>
+        </div>
+
+        <div class="poster-card">
+          <div class="poster-placeholder" style="background:linear-gradient(135deg,#1a2e1a,#163e16);">📖</div>
+          <div class="poster-type-dot" style="background:var(--book)"></div>
+          <div class="poster-rating">4.6</div>
+          <div class="poster-overlay">
+            <div class="poster-overlay-title">Intermezzo</div>
+            <div class="poster-overlay-meta">2024 · Kitap</div>
+          </div>
+        </div>
+
+        <div class="poster-card">
+          <div class="poster-placeholder" style="background:linear-gradient(135deg,#2e2a1a,#3e3616);">🎬</div>
+          <div class="poster-type-dot" style="background:var(--film)"></div>
+          <div class="poster-rating">4.3</div>
+          <div class="poster-overlay">
+            <div class="poster-overlay-title">Poor Things</div>
+            <div class="poster-overlay-meta">2023 · Film</div>
+          </div>
+        </div>
+
+        <div class="poster-card">
+          <div class="poster-placeholder" style="background:linear-gradient(135deg,#1a1e2e,#16163e);">📺</div>
+          <div class="poster-type-dot" style="background:var(--series)"></div>
+          <div class="poster-rating">4.7</div>
+          <div class="poster-overlay">
+            <div class="poster-overlay-title">The Penguin</div>
+            <div class="poster-overlay-meta">2024 · Dizi</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT — Sidebar -->
+    <aside class="sidebar">
+
+      <!-- Profile card -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Profilim</div>
+        <div class="profile-top">
+          <div class="profile-avatar">{{ user.username|slice:":2"|upper }}</div>
+          <div>
+            <div class="profile-name">{{ user.username }}</div>
+            <div class="profile-handle">@{{ user.username }}</div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div>
+            <div class="ps-num ps-film">24</div>
+            <div class="ps-lbl">Film</div>
+          </div>
+          <div>
+            <div class="ps-num ps-series">8</div>
+            <div class="ps-lbl">Dizi</div>
+          </div>
+          <div>
+            <div class="ps-num ps-book">12</div>
+            <div class="ps-lbl">Kitap</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- İzleme listesi -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">İzleme / Okuma Listem</div>
+        <div class="mini-list">
+          <div class="mini-item">
+            <div class="mini-icon">🎬</div>
+            <div>
+              <div class="mini-title">The Brutalist</div>
+              <div class="mini-meta">2024 · Film</div>
+            </div>
+          </div>
+          <div class="mini-item">
+            <div class="mini-icon">📺</div>
+            <div>
+              <div class="mini-title">Silo · S2</div>
+              <div class="mini-meta">2024 · Dizi</div>
+            </div>
+          </div>
+          <div class="mini-item">
+            <div class="mini-icon">📖</div>
+            <div>
+              <div class="mini-title">James</div>
+              <div class="mini-meta">Percival Everett · Kitap</div>
+            </div>
+          </div>
+          <div class="mini-item">
+            <div class="mini-icon">🎬</div>
+            <div>
+              <div class="mini-title">Anora</div>
+              <div class="mini-meta">2024 · Film</div>
+            </div>
+          </div>
+        </div>
+        <a href="#" style="display:block;text-align:center;margin-top:0.9rem;font-size:0.75rem;color:var(--accent);text-decoration:none;">Tümünü gör →</a>
+      </div>
+
+      <!-- Son puanlananlar -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Son Puanladıklarım</div>
+        <div class="mini-list">
+          <div class="mini-item">
+            <div class="mini-icon">🎬</div>
+            <div style="flex:1">
+              <div class="mini-title">Asteroid City</div>
+              <div class="mini-stars">
+                <span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star e">★</span><span class="mini-star e">★</span>
+              </div>
+            </div>
+          </div>
+          <div class="mini-item">
+            <div class="mini-icon">📖</div>
+            <div style="flex:1">
+              <div class="mini-title">Klara ve Güneş</div>
+              <div class="mini-stars">
+                <span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star e">★</span>
+              </div>
+            </div>
+          </div>
+          <div class="mini-item">
+            <div class="mini-icon">📺</div>
+            <div style="flex:1">
+              <div class="mini-title">Fallout · S1</div>
+              <div class="mini-stars">
+                <span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star f">★</span><span class="mini-star f">★</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Popüler Etiketler</div>
+        <div class="tags">
+          <a href="#" class="tag">Bilim Kurgu</a>
+          <a href="#" class="tag">Dram</a>
+          <a href="#" class="tag">Nolan</a>
+          <a href="#" class="tag">Türk Edebiyatı</a>
+          <a href="#" class="tag">Anime</a>
+          <a href="#" class="tag">Noir</a>
+          <a href="#" class="tag">Tarihi</a>
+          <a href="#" class="tag">Gerilim</a>
+          <a href="#" class="tag">A24</a>
+          <a href="#" class="tag">Klasikler</a>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+</body>
+</html>
