@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Folio — Kitaplar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0a0a;
+      --surface:  #141414;
+      --surface2: #1a1a1a;
+      --border:   rgba(255,255,255,0.07);
+      --accent:   #e8c97e;
+      --accent2:  #b87f4b;
+      --text:     #f0ece4;
+      --muted:    rgba(240,236,228,0.45);
+      --muted2:   rgba(240,236,228,0.22);
+      --film:     #7eb5e8;
+      --series:   #a87ee8;
+      --book:     #7ee8b0;
+      --r:        10px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px;
+    }
+
+    /* ═══════ NAVBAR ═══════ */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; gap: 2rem;
+      padding: 0 2.5rem; height: 58px;
+      background: rgba(10,10,10,0.88); backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; text-decoration: none; white-space: nowrap;
+    }
+    .nav-links { display: flex; gap: 0.2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8rem; font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      padding: 0.45rem 0.85rem; border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: rgba(255,255,255,0.06); }
+    .nav-search {
+      flex: 1; display: flex; align-items: center; gap: 0.6rem;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.45rem 0.9rem;
+      max-width: 320px; margin-left: auto; transition: border-color 0.2s;
+    }
+    .nav-search:focus-within { border-color: rgba(126,232,176,0.4); }
+    .nav-search svg { color: var(--muted2); flex-shrink: 0; }
+    .nav-search input {
+      background: none; border: none; outline: none;
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--text); width: 100%;
+    }
+    .nav-search input::placeholder { color: var(--muted2); }
+    .nav-right { display: flex; align-items: center; gap: 0.8rem; margin-left: 1rem; }
+    .nav-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: #0a0a0a;
+      cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s;
+    }
+    .nav-avatar:hover { border-color: var(--accent); }
+    .nav-username { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
+    .logout-link {
+      font-size: 0.75rem; font-weight: 500; color: var(--muted2);
+      text-decoration: none; padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
+    }
+    .logout-link:hover { color: #d97070; border-color: rgba(217,112,112,0.35); }
+
+    /* ═══════ PAGE HEADER ═══════ */
+    .page-header {
+      position: relative; padding: 3.5rem 2.5rem 2.5rem;
+      border-bottom: 1px solid var(--border); overflow: hidden;
+    }
+    .page-header-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 100% at 90% 50%, rgba(126,232,176,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 70% at 10% 50%, rgba(184,127,75,0.05) 0%, transparent 55%);
+    }
+    .page-header-inner {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem;
+    }
+    .page-header-tag {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--book); margin-bottom: 0.6rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .page-header-tag::before {
+      content: ''; display: inline-block;
+      width: 8px; height: 8px; border-radius: 50%; background: var(--book);
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; line-height: 1.1;
+    }
+    .page-header-sub { font-size: 0.88rem; color: var(--muted); margin-top: 0.6rem; line-height: 1.6; }
+    .btn { padding: 0.7rem 1.4rem; border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: none; text-decoration: none; transition: opacity 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+    .btn-gold { background: var(--accent); color: #0a0a0a; }
+    .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+
+    /* ═══════ CONTAINER ═══════ */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
+
+    /* ═══════ FILTER BAR ═══════ */
+    .filter-bar {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 1.5rem 0 0; flex-wrap: wrap;
+    }
+    .filter-label {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted2); margin-right: 0.4rem;
+    }
+    .filter-btn {
+      font-size: 0.75rem; font-weight: 500;
+      padding: 0.4rem 0.9rem; border-radius: 99px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .filter-btn:hover { background: rgba(126,232,176,0.1); color: var(--book); border-color: rgba(126,232,176,0.3); }
+    .filter-btn.active { background: rgba(126,232,176,0.15); color: var(--book); border-color: rgba(126,232,176,0.4); }
+    .filter-sep { width: 1px; height: 20px; background: var(--border); margin: 0 0.2rem; }
+    .sort-select {
+      margin-left: auto;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 500;
+      padding: 0.4rem 0.9rem; border-radius: 8px; cursor: pointer; outline: none;
+    }
+    .sort-select:focus { border-color: rgba(126,232,176,0.4); }
+
+    /* ═══════ SECTION HEAD ═══════ */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 2rem 0 1.2rem;
+    }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; }
+    .see-all {
+      font-size: 0.75rem; font-weight: 500; color: var(--accent);
+      text-decoration: none; letter-spacing: 0.06em; transition: opacity 0.2s;
+    }
+    .see-all:hover { opacity: 0.7; }
+
+    /* ═══════ KİTAP GRID ═══════ */
+    /* Kitaplar için dikey oran farklı — daha uzun */
+    .kitap-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      gap: 0.9rem; margin-bottom: 3rem;
+    }
+    .kitap-card {
+      position: relative; border-radius: 8px; overflow: hidden;
+      aspect-ratio: 2/3; background: var(--surface2);
+      cursor: pointer; transition: transform 0.22s;
+      animation: fadeUp 0.5s ease both;
+      border: 1px solid var(--border);
+    }
+    .kitap-card:hover { transform: translateY(-5px) scale(1.02); border-color: rgba(126,232,176,0.25); }
+    .kitap-card:nth-child(1)  { animation-delay: 0.05s; }
+    .kitap-card:nth-child(2)  { animation-delay: 0.09s; }
+    .kitap-card:nth-child(3)  { animation-delay: 0.13s; }
+    .kitap-card:nth-child(4)  { animation-delay: 0.17s; }
+    .kitap-card:nth-child(5)  { animation-delay: 0.21s; }
+    .kitap-card:nth-child(6)  { animation-delay: 0.25s; }
+    .kitap-card:nth-child(7)  { animation-delay: 0.29s; }
+    .kitap-card:nth-child(8)  { animation-delay: 0.33s; }
+    .kitap-card:nth-child(9)  { animation-delay: 0.37s; }
+    .kitap-card:nth-child(10) { animation-delay: 0.41s; }
+    .kitap-card:nth-child(11) { animation-delay: 0.45s; }
+    .kitap-card:nth-child(12) { animation-delay: 0.49s; }
+
+    .kitap-poster-ph {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
+    }
+    /* Kitap sırtı çizgisi efekti */
+    .kitap-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 6px; height: 100%;
+      background: rgba(126,232,176,0.2);
+      border-right: 1px solid rgba(126,232,176,0.15);
+    }
+    .kitap-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(0deg, rgba(10,10,10,0.95) 0%, transparent 55%);
+      opacity: 0; transition: opacity 0.22s;
+      display: flex; flex-direction: column; justify-content: flex-end; padding: 0.65rem;
+    }
+    .kitap-card:hover .kitap-overlay { opacity: 1; }
+    .kitap-overlay-title { font-size: 0.72rem; font-weight: 600; line-height: 1.3; }
+    .kitap-overlay-meta  { font-size: 0.6rem; color: var(--muted); margin-top: 0.15rem; }
+    .kitap-rating {
+      position: absolute; top: 0.45rem; right: 0.45rem;
+      background: rgba(10,10,10,0.8); backdrop-filter: blur(6px);
+      font-size: 0.65rem; font-weight: 600; color: var(--accent);
+      padding: 0.18rem 0.4rem; border-radius: 4px;
+    }
+    /* Sayfa sayısı rozeti */
+    .kitap-pages {
+      position: absolute; bottom: 0.45rem; left: 0.45rem;
+      background: rgba(126,232,176,0.2); backdrop-filter: blur(6px);
+      border: 1px solid rgba(126,232,176,0.35);
+      font-size: 0.58rem; font-weight: 600; color: var(--book);
+      padding: 0.15rem 0.45rem; border-radius: 4px;
+      opacity: 0; transition: opacity 0.22s;
+    }
+    .kitap-card:hover .kitap-pages { opacity: 1; }
+    .kitap-watchlist-btn {
+      position: absolute; top: 0.45rem; left: 0.45rem;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(10,10,10,0.75); backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s;
+      font-size: 0.75rem;
+    }
+    .kitap-card:hover .kitap-watchlist-btn { opacity: 1; }
+    .kitap-watchlist-btn:hover { background: rgba(232,201,126,0.25); border-color: var(--accent); }
+
+    /* ═══════ ANIMATIONS ═══════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══════ RESPONSIVE ═══════ */
+    @media (max-width: 1100px) { .kitap-grid { grid-template-columns: repeat(5, 1fr); } }
+    @media (max-width: 900px)  { .kitap-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 600px) {
+      nav { padding: 0 1rem; }
+      .nav-links { display: none; }
+      .container { padding: 0 1rem; }
+      .page-header { padding: 2rem 1rem 1.5rem; }
+      .kitap-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav>
+  <a href="/" class="nav-logo">Folio</a>
+  <ul class="nav-links">
+    <li><a href="{% url 'dashboard' %}">Keşfet</a></li>
+    <li><a href="{% url 'filmler' %}">Filmler</a></li>
+    <li><a href="{% url 'diziler' %}">Diziler</a></li>
+    <li><a href="{% url 'kitaplar' %}" class="active">Kitaplar</a></li>
+    <li><a href="#">Listeler</a></li>
+  </ul>
+  <div class="nav-search">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" placeholder="Kitap veya yazar ara…"/>
+  </div>
+  <div class="nav-right">
+    <span class="nav-username">{{ user.username }}</span>
+    <div class="nav-avatar">{{ user.username|slice:":2"|upper }}</div>
+    <a href="{% url 'logout' %}" class="logout-link">Çıkış</a>
+  </div>
+</nav>
+
+<!-- ══ PAGE HEADER ══ -->
+<div class="page-header">
+  <div class="page-header-bg"></div>
+  <div class="page-header-inner">
+    <div>
+      <div class="page-header-tag">Kitaplar</div>
+      <h1>Okuma Odası</h1>
+      <p class="page-header-sub">Kitapları keşfet, okuduklarını kaydet, okuma listenizi yönet.</p>
+    </div>
+    <div style="display:flex;gap:0.7rem;flex-shrink:0">
+      <a href="#" class="btn btn-ghost">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+        Listem
+      </a>
+      <a href="#" class="btn btn-gold">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Kitap Ekle
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="container">
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="filter-label">Tür</span>
+    <button class="filter-btn active" data-filter-type="genre" data-value="">Tümü</button>
+    <button class="filter-btn" data-filter-type="genre" data-value="roman">Roman</button>
+    <button class="filter-btn" data-filter-type="genre" data-value="bilim-kurgu">Bilim Kurgu</button>
+    <button class="filter-btn" data-filter-type="genre" data-value="fantastik">Fantastik</button>
+    <button class="filter-btn" data-filter-type="genre" data-value="deneme">Deneme</button>
+    <button class="filter-btn" data-filter-type="genre" data-value="biyografi">Biyografi</button>
+    <button class="filter-btn" data-filter-type="genre" data-value="klasik">Klasik</button>
+    <div class="filter-sep"></div>
+    <button class="filter-btn" data-filter-type="year" data-value="2024">2024</button>
+    <button class="filter-btn" data-filter-type="year" data-value="2023">2023</button>
+    <button class="filter-btn" data-filter-type="year" data-value="klasik">Klasikler</button>
+    <select class="sort-select" id="sortSelect">
+      <option value="rating">Puana Göre</option>
+      <option value="newest">Yeniden Eskiye</option>
+      <option value="oldest">Eskiden Yeniye</option>
+    </select>
+  </div>
+
+  <!-- Popüler Kitaplar -->
+  <div class="section-head">
+    <div class="section-title">Popüler Kitaplar</div>
+    <a href="#" class="see-all">Tümünü gör →</a>
+  </div>
+  <div class="kitap-grid" id="kitapGrid">
+
+    <div class="kitap-card" data-genre="roman" data-year="2023">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d1a2e,#1a2e3a)">🌊</div>
+      <div class="kitap-rating">4.6</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">329 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">Intermezzo</div>
+        <div class="kitap-overlay-meta">Sally Rooney · Roman</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="roman" data-year="2024">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a0d0d,#2e1a1a)">🌹</div>
+      <div class="kitap-rating">4.5</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">464 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">James</div>
+        <div class="kitap-overlay-meta">Percival Everett · Roman</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="biyografi" data-year="2024">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a1a0d,#2e2e0d)">⚡</div>
+      <div class="kitap-rating">4.3</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">688 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">Elon Musk</div>
+        <div class="kitap-overlay-meta">Walter Isaacson · Biyografi</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="roman" data-year="2023">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d2e1a,#0d3a2e)">🍃</div>
+      <div class="kitap-rating">4.4</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">352 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">Klara ve Güneş</div>
+        <div class="kitap-overlay-meta">Kazuo Ishiguro · Roman</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="bilim-kurgu" data-year="klasik">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d0d2e,#1a0d3a)">🪐</div>
+      <div class="kitap-rating">4.8</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">412 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">Dune</div>
+        <div class="kitap-overlay-meta">Frank Herbert · Bilim Kurgu</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="deneme" data-year="2023">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#2e1a0d,#3a2a0d)">📖</div>
+      <div class="kitap-rating">4.2</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">240 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">The Midnight Library</div>
+        <div class="kitap-overlay-meta">Matt Haig · Roman</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="fantastik" data-year="klasik">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a2e0d,#2a3a0d)">🌲</div>
+      <div class="kitap-rating">4.9</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">1178 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">The Lord of the Rings</div>
+        <div class="kitap-overlay-meta">J.R.R. Tolkien · Fantastik</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="roman" data-year="2024">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#2e0d2e,#3a0d3a)">🔮</div>
+      <div class="kitap-rating">4.1</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">384 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">All Fours</div>
+        <div class="kitap-overlay-meta">Miranda July · Roman</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="klasik" data-year="klasik">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#2e2e0d,#3a3a0d)">🕯️</div>
+      <div class="kitap-rating">4.7</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">560 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">Anna Karenina</div>
+        <div class="kitap-overlay-meta">Lev Tolstoy · Klasik</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="biyografi" data-year="klasik">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d2e2e,#0d3a3a)">🍎</div>
+      <div class="kitap-rating">4.5</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">630 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">Steve Jobs</div>
+        <div class="kitap-overlay-meta">Walter Isaacson · Biyografi</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="bilim-kurgu" data-year="klasik">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a0d1a,#2e0d2e)">🤖</div>
+      <div class="kitap-rating">4.6</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">288 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">1984</div>
+        <div class="kitap-overlay-meta">George Orwell · Bilim Kurgu</div>
+      </div>
+    </div>
+
+    <div class="kitap-card" data-genre="roman" data-year="2023">
+      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d1a1a,#0d2e2e)">🌙</div>
+      <div class="kitap-rating">4.3</div>
+      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
+      <div class="kitap-pages">416 sf.</div>
+      <div class="kitap-overlay">
+        <div class="kitap-overlay-title">Tomorrow, and Tomorrow, and Tomorrow</div>
+        <div class="kitap-overlay-meta">Gabrielle Zevin · Roman</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const cards = document.querySelectorAll('#kitapGrid .kitap-card');
+  let activeGenre = '';
+  let activeYear  = '';
+
+  function applyFilters() {
+    cards.forEach(card => {
+      const genreMatch = !activeGenre || card.dataset.genre === activeGenre;
+      const yearMatch  = !activeYear  || card.dataset.year  === activeYear;
+      card.style.display = (genreMatch && yearMatch) ? '' : 'none';
+    });
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const type  = btn.dataset.filterType;
+      const value = btn.dataset.value;
+
+      if (type === 'genre') {
+        document.querySelectorAll('.filter-btn[data-filter-type="genre"]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeGenre = value;
+      } else if (type === 'year') {
+        if (btn.classList.contains('active')) {
+          btn.classList.remove('active');
+          activeYear = '';
+        } else {
+          document.querySelectorAll('.filter-btn[data-filter-type="year"]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeYear = value;
+        }
+      }
+
+      applyFilters();
+    });
+  });
+
+  document.getElementById('sortSelect').addEventListener('change', function () {
+    const grid = document.getElementById('kitapGrid');
+    const visible = [...cards].filter(c => c.style.display !== 'none');
+
+    visible.sort((a, b) => {
+      const rA = parseFloat(a.querySelector('.kitap-rating').textContent);
+      const rB = parseFloat(b.querySelector('.kitap-rating').textContent);
+      const yA = a.dataset.year === 'klasik' ? 0 : parseInt(a.dataset.year);
+      const yB = b.dataset.year === 'klasik' ? 0 : parseInt(b.dataset.year);
+      if (this.value === 'rating')  return rB - rA;
+      if (this.value === 'newest')  return yB - yA;
+      if (this.value === 'oldest')  return yA - yB;
+      return 0;
+    });
+
+    visible.forEach(c => grid.appendChild(c));
+  });
+</script>
+
+</body>
+</html>
