@@ -60,4 +60,13 @@ def filmler_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     return render(request, 'filmler.html')
-    return render(request, 'dashboard.html')
+
+def diziler_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    return render(request, 'diziler.html')
+
+def kitaplar_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    return render(request, 'kitaplar.html')
