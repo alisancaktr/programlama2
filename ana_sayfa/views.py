@@ -54,9 +54,13 @@ def logout_view(request):
 def dashboard_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
+<<<<<<< HEAD
     return render(request, 'dashboard.html')
 
 def filmler_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     return render(request, 'filmler.html')
+=======
+    return render(request, 'dashboard.html')
+>>>>>>> 4cc4eff197454fec2de41425b4e25b5be827bd35
