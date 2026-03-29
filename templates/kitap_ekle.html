@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yeni Kitap Ekle | Folio</title>
+    <style>
+        /* CSS stilleri film ve dizi ile aynı, tasarımı koruyoruz */
+        body { background-color: #0a0a0a; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .form-card { background: #141414; padding: 40px; border-radius: 15px; border: 1px solid #222; width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { color: #f1c40f; font-size: 24px; margin-bottom: 10px; }
+        p { color: #888; font-size: 14px; margin-bottom: 30px; }
+        .input-group { margin-bottom: 20px; }
+        input, textarea { width: 100%; padding: 12px; background: #1f1f1f; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; }
+        input:focus { border-color: #f1c40f; outline: none; }
+        .btn-save { background: #f1c40f; color: #000; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-save:hover { background: #d4af37; transform: translateY(-2px); }
+        .cancel-link { display: block; text-align: center; margin-top: 15px; color: #888; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h1>📖 Yeni Kitap Ekle</h1>
+        <p>Eklemek istediğiniz kitabın adını yazın.</p>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" name="baslik" placeholder="Kitap Adı (Örn: Nutuk)" required>
+            </div>
+            <button type="submit" class="btn-save">Kaydet ve Yayınla</button>
+            <a href="{% url 'kitaplar' %}" class="cancel-link">Vazgeç</a>
+        </form>
+    </div>
+</body>
+</html>

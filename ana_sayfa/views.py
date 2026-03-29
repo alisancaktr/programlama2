@@ -72,3 +72,14 @@ def film_ekle_view(request):
     
     return render(request, 'film_ekle.html', {'form': form})
 
+def dizi_ekle_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    # İleride buraya dizi kaydetme mantığı gelecek
+    return render(request, 'dizi_ekle.html')
+
+def kitap_ekle_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    # İleride buraya kitap kaydetme mantığı gelecek
+    return render(request, 'kitap_ekle.html')

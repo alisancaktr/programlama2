@@ -3,7 +3,7 @@ from django.urls import path
 # Buraya film_ekle_view ekledik:
 from ana_sayfa.views import (
     login_view, logout_view, dashboard_view, 
-    filmler_view, diziler_view, kitaplar_view, film_ekle_view
+    filmler_view, diziler_view, kitaplar_view, film_ekle_view, dizi_ekle_view, kitap_ekle_view
 )
 
 urlpatterns = [
@@ -16,4 +16,6 @@ urlpatterns = [
     path('kitaplar/', kitaplar_view, name='kitaplar'),
     # Yeni eklenen satır:
     path('film-ekle/', film_ekle_view, name='film_ekle'),
+    path('dizi-ekle/', dizi_ekle_view, name='dizi_ekle'),
+    path('kitap-ekle/', kitap_ekle_view, name='kitap_ekle'),
 ]
