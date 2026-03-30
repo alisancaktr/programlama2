@@ -3,40 +3,42 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
-from .forms import FilmForm
+
+def index_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    return render(request, 'index.html')
 
 @csrf_exempt
 def login_view(request):
-    if request.user.is_authenticated and request.method == 'GET':
-        return redirect('dashboard')
-
     if request.method == 'POST':
+        action = request.POST.get('action')
         u = request.POST.get('username')
         e = request.POST.get('email')
         p = request.POST.get('password')
-        
-        if u: 
-            if User.objects.filter(username=u).exists():
-                messages.error(request, f"'{u}' ismi kapılmış, başka bir tane dene.")
-            elif User.objects.filter(email=e).exists():
-                messages.error(request, "Bu e-posta adresiyle daha önce kayıt olunmuş.")
+
+        if action == 'register':
+            if u and p:
+                if not User.objects.filter(username=u).exists():
+                    User.objects.create_user(username=u, email=e, password=p)
+                    messages.success(request, f"Başarılı! {u} kaydedildi. Şimdi giriş yapabilirsin.")
+                    return redirect('login')
+                else:
+                    messages.error(request, "Bu kullanıcı adı zaten alınmış!")
             else:
-                try:
-                    new_user = User.objects.create_user(username=u, email=e, password=p)
-                    login(request, new_user)
-                    messages.success(request, f"Hoş geldin {u}! Kaydın başarıyla yapıldı.")
-                    return redirect('dashboard')
-                except Exception as err:
-                    messages.error(request, f"Sistemsel hata: {err}")
-        
-        elif e and p:
-            user_obj = User.objects.filter(email=e).first()
-            if user_obj:
+                messages.error(request, "Kullanıcı adı ve şifre zorunlu.")
+
+        elif action == 'login':
+            try:
+                user_obj = User.objects.get(email=e)
                 user = authenticate(request, username=user_obj.username, password=p)
-                if user:
+                if user is not None:
                     login(request, user)
                     return redirect('dashboard')
-            messages.error(request, "Giriş başarısız. E-posta veya şifre yanlış.")
+                else:
+                    messages.error(request, "Şifre hatalı!")
+            except User.DoesNotExist:
+                messages.error(request, "Bu e-posta ile kayıtlı kullanıcı bulunamadı.")
 
     return render(request, 'login.html')
 
@@ -50,36 +52,31 @@ def dashboard_view(request):
     return render(request, 'dashboard.html')
 
 def filmler_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
     return render(request, 'filmler.html')
 
 def diziler_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
     return render(request, 'diziler.html')
 
 def kitaplar_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
     return render(request, 'kitaplar.html')
 
 def film_ekle_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
-        
-    if request.method == "POST":
-        form = FilmForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('filmler')
-    else:
-        form = FilmForm()
-    
-    return render(request, 'film_ekle.html', {'form': form})
+    return render(request, 'film_ekle.html')
 
 def dizi_ekle_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    # İleride buraya dizi kaydetme mantığı gelecek
     return render(request, 'dizi_ekle.html')
 
 def kitap_ekle_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    # İleride buraya kitap kaydetme mantığı gelecek
     return render(request, 'kitap_ekle.html')
