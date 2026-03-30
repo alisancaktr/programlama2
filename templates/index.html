@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Folio — Film, Dizi ve Kitap Günlüğün</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#0a0a0a; --accent:#e8c97e; --accent2:#b87f4b; --text:#f0ece4; --muted:rgba(240,236,228,0.55); --border:rgba(255,255,255,0.08); }
+    html, body { height: 100%; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+    body::after { content:''; position:fixed; inset:0; z-index:9999; pointer-events:none; opacity:0.025; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size:128px; }
+    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; padding:0 3rem; height:56px; background:rgba(10,10,10,0.7); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); }
+    .nav-logo { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; text-decoration:none; margin-right:auto; }
+    .nav-links { display:flex; align-items:center; gap:0.5rem; list-style:none; }
+    .nav-links a { font-size:0.8rem; font-weight:500; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); text-decoration:none; padding:0.4rem 0.9rem; border-radius:6px; transition:color 0.2s,background 0.2s; }
+    .nav-links a:hover { color:var(--text); background:rgba(255,255,255,0.06); }
+    .btn-nav-register { font-size:0.8rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:#0a0a0a; text-decoration:none; padding:0.4rem 1.1rem; border-radius:6px; background:var(--accent); transition:opacity 0.2s; margin-left:0.3rem; cursor:pointer; }
+    .btn-nav-register:hover { opacity:0.85; }
+    .hero { position:relative; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:7rem 2rem 5rem; overflow:hidden; }
+    .poster-wall { position:absolute; inset:0; z-index:0; display:grid; grid-template-columns:repeat(8,1fr); gap:4px; transform:scale(1.05) rotate(-1deg); opacity:0.22; }
+    .pw-col { display:flex; flex-direction:column; gap:4px; }
+    .pw-col.down { animation:scrollDown 30s linear infinite; }
+    .pw-col.up { animation:scrollUp 28s linear infinite; }
+    @keyframes scrollDown { from{transform:translateY(0)} to{transform:translateY(-50%)} }
+    @keyframes scrollUp { from{transform:translateY(-50%)} to{transform:translateY(0)} }
+    .pw-tile { border-radius:6px; flex-shrink:0; }
+    .hero-overlay { position:absolute; inset:0; z-index:1; background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(10,10,10,0.55) 0%,rgba(10,10,10,0.92) 80%),linear-gradient(180deg,rgba(10,10,10,0.8) 0%,transparent 20%,transparent 75%,rgba(10,10,10,1) 100%); }
+    .hero-content { position:relative; z-index:2; max-width:720px; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:0.6rem; font-size:0.7rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1.5rem; padding:0.35rem 1rem; border:1px solid rgba(232,201,126,0.25); border-radius:99px; background:rgba(232,201,126,0.06); animation:fadeUp 0.7s ease both; }
+    .hero-title { font-family:'Playfair Display',serif; font-size:clamp(2.6rem,6vw,5rem); font-weight:900; line-height:1.08; margin-bottom:1.5rem; animation:fadeUp 0.7s 0.1s ease both; }
+    .hero-title em { font-style:italic; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero-sub { font-size:1.05rem; font-weight:300; color:var(--muted); line-height:1.75; max-width:540px; margin:0 auto 2.5rem; animation:fadeUp 0.7s 0.18s ease both; }
+    .hero-cta { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; animation:fadeUp 0.7s 0.26s ease both; }
+    .btn-primary { display:inline-flex; align-items:center; gap:0.5rem; padding:0.9rem 2rem; background:var(--accent); color:#0a0a0a; font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:600; border-radius:10px; text-decoration:none; transition:opacity 0.2s,transform 0.15s; cursor:pointer; }
+    .btn-primary:hover { opacity:0.88; transform:translateY(-2px); }
+    .hero-types { display:flex; justify-content:center; gap:0.8rem; margin-top:2.5rem; animation:fadeUp 0.7s 0.34s ease both; }
+    .type-badge { display:flex; align-items:center; gap:0.4rem; font-size:0.72rem; font-weight:500; padding:0.35rem 0.9rem; border-radius:99px; border:1px solid var(--border); background:rgba(255,255,255,0.03); color:var(--muted); }
+    .dot { width:7px; height:7px; border-radius:50%; }
+    .dot-film { background:#7eb5e8; } .dot-series { background:#a87ee8; } .dot-book { background:#7ee8b0; }
+    .stats-strip { position:relative; z-index:2; display:flex; justify-content:center; gap:4rem; padding:2rem 2rem 3rem; border-top:1px solid var(--border); animation:fadeUp 0.7s 0.4s ease both; }
+    .stat { text-align:center; }
+    .stat-num { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:900; color:var(--accent); line-height:1; }
+    .stat-lbl { font-size:0.68rem; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-top:0.3rem; }
+    .features { padding:5rem 2rem; max-width:1100px; margin:0 auto; }
+    .features-title { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:900; text-align:center; margin-bottom:0.75rem; }
+    .features-sub { text-align:center; color:var(--muted); font-size:0.9rem; margin-bottom:3.5rem; }
+    .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; }
+    .feature-card { background:rgba(20,20,20,0.8); border:1px solid var(--border); border-radius:14px; padding:2rem 1.8rem; transition:border-color 0.2s,transform 0.2s; }
+    .feature-card:hover { border-color:rgba(232,201,126,0.2); transform:translateY(-3px); }
+    .feature-icon { font-size:2rem; margin-bottom:1rem; }
+    .feature-title { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; margin-bottom:0.6rem; }
+    .feature-desc { font-size:0.83rem; color:var(--muted); line-height:1.7; }
+    footer { border-top:1px solid var(--border); padding:2rem; text-align:center; font-size:0.75rem; color:var(--muted); }
+    footer a { color:var(--accent); text-decoration:none; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+    @media (max-width:700px) { nav{padding:0 1.2rem} .nav-links{display:none} .features-grid{grid-template-columns:1fr} .stats-strip{gap:2rem} }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Folio</a>
+  <ul class="nav-links">
+    <li><a href="#">Filmler</a></li>
+    <li><a href="#">Diziler</a></li>
+    <li><a href="#">Kitaplar</a></li>
+    <li><a href="#">Listeler</a></li>
+  </ul>
+  <a href="{% url 'login' %}" class="btn-nav-register">Başla →</a>
+</nav>
+
+<section class="hero">
+  <div class="poster-wall" id="posterWall"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">✦ Film · Dizi · Kitap</div>
+    <h1 class="hero-title">İzlediklerini say.<br/><em>Okuduklarını</em> anlat.</h1>
+    <p class="hero-sub">Film, dizi ve kitaplarını tek bir yerde takip et. Puan ver, yorum yaz, arkadaşlarınla paylaş.</p>
+    <div class="hero-cta">
+      <a href="{% url 'login' %}" class="btn-primary">Başla →</a>
+    </div>
+    <div class="hero-types">
+      <span class="type-badge"><span class="dot dot-film"></span>Film</span>
+      <span class="type-badge"><span class="dot dot-series"></span>Dizi</span>
+      <span class="type-badge"><span class="dot dot-book"></span>Kitap</span>
+    </div>
+  </div>
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">12K+</div><div class="stat-lbl">Kullanıcı</div></div>
+    <div class="stat"><div class="stat-num">850K+</div><div class="stat-lbl">İçerik</div></div>
+    <div class="stat"><div class="stat-num">2.4M+</div><div class="stat-lbl">Kayıt</div></div>
+  </div>
+</section>
+
+<section class="features">
+  <h2 class="features-title">Her şey bir arada</h2>
+  <p class="features-sub">Film günlüğünden fazlası — dizi ve kitaplar da dahil.</p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">🎬</div><div class="feature-title">Film Takibi</div><div class="feature-desc">İzlediğin filmleri kaydet, puan ver, kısa yorumlar yaz.</div></div>
+    <div class="feature-card"><div class="feature-icon">📺</div><div class="feature-title">Dizi Günlüğü</div><div class="feature-desc">Sezon sezon takip et. Yarım bıraktıklarını listele.</div></div>
+    <div class="feature-card"><div class="feature-icon">📖</div><div class="feature-title">Kitap Rafı</div><div class="feature-desc">Okuduklarını ve okumak istediklerini rafına ekle.</div></div>
+    <div class="feature-card"><div class="feature-icon">⭐</div><div class="feature-title">Puanlama</div><div class="feature-desc">5 yıldız üzerinden puanla, topluluk ortalamasını gör.</div></div>
+    <div class="feature-card"><div class="feature-icon">👥</div><div class="feature-title">Arkadaşlar</div><div class="feature-desc">Arkadaşlarının ne izlediğini takip et.</div></div>
+    <div class="feature-card"><div class="feature-icon">📋</div><div class="feature-title">Listeler</div><div class="feature-desc">Listeler oluştur, paylaş, keşfet.</div></div>
+  </div>
+</section>
+
+<footer><p>© 2026 Folio — <a href="#">Gizlilik</a> · <a href="#">Kullanım Koşulları</a></p></footer>
+
+<script>
+  const wall = document.getElementById('posterWall');
+  const colors = [['#1a1a2e','#16213e'],['#2e1a1a','#3e1616'],['#1a2e1a','#163e16'],['#2e2a1a','#3e3616'],['#1a1e2e','#16163e'],['#2e1a2e','#3e163e'],['#1e2e1a','#243e16'],['#2e1e1a','#3e2816']];
+  const emojis = ['🎬','📺','📖','🎭','🎪','🌟','🎯','🎨'];
+  for (let c = 0; c < 8; c++) {
+    const col = document.createElement('div');
+    col.className = 'pw-col ' + (c % 2 === 0 ? 'down' : 'up');
+    for (let rep = 0; rep < 2; rep++) {
+      for (let r = 0; r < 8; r++) {
+        const tile = document.createElement('div');
+        tile.className = 'pw-tile';
+        const [c1,c2] = colors[(c*8+r) % colors.length];
+        tile.style.cssText = `background:linear-gradient(135deg,${c1},${c2});height:${110+Math.random()*60}px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;`;
+        tile.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        col.appendChild(tile);
+      }
+    }
+    wall.appendChild(col);
+  }
+</script>
+
+</body>
+</html>
