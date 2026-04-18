@@ -30,7 +30,7 @@ def login_view(request):
 
         elif action == 'login':
             try:
-                user_obj = User.objects.get(email=e)
+                user_obj = User.objects.filter(email=e).first()
                 user = authenticate(request, username=user_obj.username, password=p)
                 if user is not None:
                     login(request, user)

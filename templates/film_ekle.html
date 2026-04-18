@@ -2,33 +2,120 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Yeni Film Ekle | Folio</title>
+    <title>Hızlı Film Ekle | Folio</title>
     <style>
-        body { background-color: #0a0a0a; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .form-card { background: #141414; padding: 40px; border-radius: 15px; border: 1px solid #222; width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { color: #f1c40f; font-size: 24px; margin-bottom: 10px; }
-        p { color: #888; font-size: 14px; margin-bottom: 30px; }
+        body { background-color: #0a0a0a; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .form-card { background: #141414; padding: 40px; border-radius: 15px; border: 1px solid #222; width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+        h1 { color: #f1c40f; font-size: 24px; margin-bottom: 10px; text-align: center; }
+        p.subtitle { color: #888; font-size: 14px; margin-bottom: 25px; text-align: center; }
+        
+        /* Akıllı Arama Kutusu */
+        .search-container { position: relative; margin-bottom: 20px; }
+        .search-container input { width: 100%; padding: 15px; background: #1f1f1f; border: 2px solid #333; border-radius: 10px; color: white; font-size: 16px; box-sizing: border-box; transition: 0.3s; }
+        .search-container input:focus { border-color: #f1c40f; outline: none; }
+
+        /* Otomatik Tamamlama Sonuçları */
+        #results { position: absolute; top: 100%; left: 0; right: 0; background: #1a1a1a; border-radius: 0 0 10px 10px; border: 1px solid #333; z-index: 100; display: none; max-height: 300px; overflow-y: auto; }
+        .search-item { display: flex; align-items: center; padding: 10px; cursor: pointer; border-bottom: 1px solid #222; transition: 0.2s; }
+        .search-item:hover { background: #222; }
+        .search-item img { width: 45px; height: 65px; border-radius: 4px; margin-right: 15px; object-fit: cover; }
+        .search-item div { font-size: 14px; color: #ddd; }
+        .search-item b { display: block; color: #fff; }
+
         .input-group { margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; background: #1f1f1f; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; }
-        input:focus { border-color: #f1c40f; outline: none; }
-        .btn-save { background: #f1c40f; color: #000; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .input-group label { display: block; margin-bottom: 8px; color: #f1c40f; font-size: 13px; font-weight: bold; }
+        .input-group select { width: 100%; padding: 12px; background: #1f1f1f; border: 1px solid #333; border-radius: 8px; color: white; cursor: pointer; }
+
+        .btn-save { background: #f1c40f; color: #000; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px; }
         .btn-save:hover { background: #d4af37; transform: translateY(-2px); }
-        .cancel-link { display: block; text-align: center; margin-top: 15px; color: #888; text-decoration: none; font-size: 14px; }
+        
+        .cancel-link { display: block; text-align: center; margin-top: 15px; color: #666; text-decoration: none; font-size: 14px; }
+        .cancel-link:hover { color: #888; }
     </style>
 </head>
 <body>
-    <div class="form-card">
-        <h1>🎬 Yeni Film Ekle</h1>
-        <p>Eklemek istediğiniz filmin adını yazın.</p>
-        
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="input-group">
-                <input type="text" name="baslik" placeholder="Film Adı (Örn: The Godfather)" required>
-            </div>
-            <button type="submit" class="btn-save">Kaydet ve Yayınla</button>
-            <a href="{% url 'filmler' %}" class="cancel-link">Vazgeç</a>
-        </form>
+<div class="form-card">
+    <h1>🎬 Film Ekle</h1>
+    <p class="subtitle">Kütüphanede ara ve listeni seç.</p>
+    
+    <div class="search-container">
+        <input type="text" id="liveSearch" placeholder="Film adını yazmaya başlayın..." autocomplete="off">
+        <div id="results"></div>
     </div>
+
+    <form method="POST" action="{% url 'film_ekle' %}">
+        {% csrf_token %}
+        
+        <input type="hidden" name="baslik" id="id_baslik">
+        <input type="hidden" name="afis_url" id="id_afis_url">
+        <input type="hidden" name="puan" id="id_puan">
+
+        <div class="input-group">
+            <label>Hangi Listeye Eklensin?</label>
+            <select name="liste_durumu" id="id_liste_durumu">
+                <option value="izlemek_istediklerim">🎥 İzlemek İstediklerim</option>
+                <option value="izlediklerim">✅ İzlediğim Filmler</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-save">🚀 Listeme Kaydet</button>
+        <a href="{% url 'filmler' %}" class="cancel-link">Vazgeç</a>
+    </form>
+</div>
+
+<script>
+    const searchInput = document.getElementById('liveSearch');
+    const resultsDiv = document.getElementById('results');
+    const apiKey = '27f9cf9c3719c9ff4926880180a9ebef';
+
+    searchInput.addEventListener('input', async () => {
+        const query = searchInput.value;
+        if (query.length > 2) {
+            try {
+                const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}&language=tr-TR`);
+                const data = await res.json();
+                
+                resultsDiv.innerHTML = '';
+                resultsDiv.style.display = 'block';
+                
+                data.results.slice(0, 5).forEach(film => {
+                    const item = document.createElement('div');
+                    item.className = 'search-item';
+                    const posterPath = film.poster_path ? `https://image.tmdb.org/t/p/w92${film.poster_path}` : 'https://via.placeholder.com/92x138?text=Yok';
+                    
+                    item.innerHTML = `
+                        <img src="${posterPath}">
+                        <div>
+                            <b>${film.title}</b>
+                            <span>${film.release_date ? film.release_date.split('-')[0] : 'Tarih Belirsiz'}</span>
+                        </div>
+                    `;
+                    
+                    item.onclick = () => {
+                        // CRITICAL: Buradaki veriler gizli inputlara yazılıyor
+                        document.getElementById('id_baslik').value = film.title;
+                        document.getElementById('id_afis_url').value = film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : '';
+                        document.getElementById('id_puan').value = film.vote_average;
+                        
+                        searchInput.value = film.title;
+                        resultsDiv.style.display = 'none';
+                        searchInput.style.borderColor = '#2ecc71'; 
+                    };
+                    resultsDiv.appendChild(item);
+                });
+            } catch (err) {
+                console.error("Hata:", err);
+            }
+        } else {
+            resultsDiv.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+            resultsDiv.style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>

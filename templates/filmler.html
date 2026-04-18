@@ -334,13 +334,18 @@
     </div>
     <div style="display:flex;gap:0.7rem;flex-shrink:0">
       <a href="#" class="btn btn-ghost">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M3 6h18M7 12h10M11 18h2"/>
+        </svg>
         Listem
       </a>
-      <a href="/film-ekle/" class="btn btn-gold">
-    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-    Film Ekle
-</a>
+      
+      <a href="{% url 'film_ekle' %}" class="btn btn-gold">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Film Ekle
+      </a>
     </div>
   </div>
 </div>
@@ -371,134 +376,39 @@
   </div>
 
   <!-- Popüler Filmler -->
-  <div class="section-head">
-    <div class="section-title">Popüler Filmler</div>
-    <a href="#" class="see-all">Tümünü gör →</a>
-  </div>
-  <div class="film-grid" id="filmGrid">
+<div class="section-head">
+    <div class="section-title">⏳ İzlemek İstediklerim</div>
+    <a href="{% url 'film_ekle' %}" class="btn">Film Ekle</a>
+</div>
 
-    <div class="film-card" data-genre="bilim-kurgu" data-year="2024">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#0d1b2e,#1a2e4a)">🏜️</div>
-      <div class="film-rating">4.5</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Dune: Part Two</div>
-        <div class="film-overlay-meta">2024 · Bilim Kurgu</div>
-      </div>
+<div class="film-grid">
+    {% for film in izlemek_istediklerim %}
+    <div class="film-card">
+        <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
+        <div class="film-overlay">
+            <div class="film-overlay-title">{{ film.baslik }}</div>
+        </div>
     </div>
+    {% endfor %}
+</div>
 
-    <div class="film-card" data-genre="dram" data-year="2024">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#1a0d0d,#3a1010)">🎭</div>
-      <div class="film-rating">4.7</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">The Brutalist</div>
-        <div class="film-overlay-meta">2024 · Dram</div>
-      </div>
+<div style="margin: 40px 0;"></div>
+
+<div class="section-head">
+    <div class="section-title">✅ İzlediğim Filmler</div>
+</div>
+
+<div class="film-grid">
+    {% for film in izlediklerim %}
+    <div class="film-card">
+        <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
+        <div class="film-overlay">
+            <div class="film-overlay-title">{{ film.baslik }}</div>
+        </div>
     </div>
-
-    <div class="film-card" data-genre="dram" data-year="2023">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#1a2e1a,#0d3a0d)">🌿</div>
-      <div class="film-rating">4.3</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Poor Things</div>
-        <div class="film-overlay-meta">2023 · Dram</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="dram" data-year="2023">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#1a1a0d,#3a3010)">🌅</div>
-      <div class="film-rating">4.8</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Past Lives</div>
-        <div class="film-overlay-meta">2023 · Dram</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="bilim-kurgu" data-year="2024">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#0d0d2e,#1a1a4a)">🚀</div>
-      <div class="film-rating">4.2</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Alien: Romulus</div>
-        <div class="film-overlay-meta">2024 · Bilim Kurgu</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="komedi" data-year="2023">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#2e1a0d,#4a2e0d)">🎨</div>
-      <div class="film-rating">4.0</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Asteroid City</div>
-        <div class="film-overlay-meta">2023 · Komedi</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="dram" data-year="2024">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#1a0d1a,#3a1a3a)">🦸</div>
-      <div class="film-rating">4.1</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Anora</div>
-        <div class="film-overlay-meta">2024 · Dram</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="dram" data-year="2023">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#0d2e2e,#0d3a3a)">🌊</div>
-      <div class="film-rating">4.4</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">All of Us Strangers</div>
-        <div class="film-overlay-meta">2023 · Dram</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="dram" data-year="2023">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#2e2e0d,#3a3a0d)">⚡</div>
-      <div class="film-rating">4.6</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Oppenheimer</div>
-        <div class="film-overlay-meta">2023 · Dram</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="dram" data-year="2023">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#2e0d2e,#4a0d4a)">🎬</div>
-      <div class="film-rating">4.5</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">The Zone of Interest</div>
-        <div class="film-overlay-meta">2023 · Dram</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="gerilim" data-year="2024">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#0d1a2e,#0d2e4a)">🌌</div>
-      <div class="film-rating">4.3</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Civil War</div>
-        <div class="film-overlay-meta">2024 · Gerilim</div>
-      </div>
-    </div>
-
-    <div class="film-card" data-genre="animasyon" data-year="2023">
-      <div class="film-poster-ph" style="background:linear-gradient(135deg,#1a2e0d,#2e4a0d)">🍃</div>
-      <div class="film-rating">4.2</div>
-      <div class="film-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="film-overlay">
-        <div class="film-overlay-title">Robot Dreams</div>
-        <div class="film-overlay-meta">2023 · Animasyon</div>
-      </div>
-    </div>
-
-  </div>
-
+    {% endfor %}
 </div>
 
 <script>
