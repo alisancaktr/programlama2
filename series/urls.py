@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import diziler_view, dizi_ekle_view
+from . import views
 
 urlpatterns = [
-    path('', diziler_view, name='diziler'),
-    path('dizi-ekle/', dizi_ekle_view, name='dizi_ekle'),
+    path('', views.diziler_view, name='diziler'), # Başına views. ekledik
+    path('dizi-ekle/', views.dizi_ekle_view, name='dizi_ekle'), # Başına views. ekledik
+    path('<int:dizi_id>/', views.dizi_detay_view, name='dizi_detay'),
+    path('sil/<int:dizi_id>/', views.dizi_sil_view, name='dizi_sil'),
 ]

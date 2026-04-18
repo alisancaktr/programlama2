@@ -1,32 +1,66 @@
-from django.shortcuts import render, redirect
-from .models import Dizi
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from .models import Dizi, DiziYorum
 
 @login_required(login_url='login')
 def diziler_view(request):
-    diziler = Dizi.objects.filter(user=request.user)
+    # Tüm dizileri değil, durumuna göre ayrı ayrı filtrelemeliyiz
+    izlediklerim = Dizi.objects.filter(
+        user=request.user, 
+        liste_durumu='izlediklerim' # Models.py'daki key ile aynı olmalı
+    )
+    
+    izlemek_istediklerim = Dizi.objects.filter(
+        user=request.user, 
+        liste_durumu='izlemek_istediklerim'
+    )
+    
     context = {
-        'izlemek_istediklerim': diziler.filter(liste_durumu='izlemek_istediklerim'),
-        'izlediklerim': diziler.filter(liste_durumu='izlediklerim')
+        'izlediklerim': izlediklerim,
+        'izlemek_istediklerim': izlemek_istediklerim
     }
     return render(request, 'diziler.html', context)
 
 @login_required(login_url='login')
 def dizi_ekle_view(request):
-    if request.method == 'POST':
-        baslik = request.POST.get('baslik')
-        afis_url = request.POST.get('afis_url')
-        puan = request.POST.get('puan')
-        liste_durumu = request.POST.get('liste_durumu')
-
-        if baslik:
-            Dizi.objects.create(
-                user=request.user,
-                baslik=baslik,
-                afis_url=afis_url,
-                puan=float(puan) if puan and puan != 'undefined' else 0,
-                liste_durumu=liste_durumu
-            )
-            return redirect('diziler')
-            
+    if request.method == "POST":
+        # Formdan gelen 'liste_durumu' verisini çekiyoruz
+        liste_durumu = request.POST.get('liste_durumu') 
+        
+        # Diziyi oluştururken bu durumu açıkça belirtmeliyiz
+        Dizi.objects.create(
+            user=request.user,
+            baslik=request.POST.get('baslik'),
+            yonetmen=request.POST.get('yonetmen'),
+            tur=request.POST.get('tur'),
+            puan=request.POST.get('puan'),
+            afis_url=request.POST.get('afis_url'),
+            # KRİTİK NOKTA: Buraya dikkat!
+            liste_durumu=liste_durumu 
+        )
+        return redirect('diziler')
     return render(request, 'dizi_ekle.html')
+
+@login_required(login_url='login')
+def dizi_detay_view(request, dizi_id):
+    dizi = get_object_or_404(Dizi, id=dizi_id)
+    
+    if request.method == "POST":
+        icerik = request.POST.get('icerik')
+        puan = request.POST.get('kisisel_puan')
+        if icerik:
+            DiziYorum.objects.create(
+                dizi=dizi, user=request.user, 
+                icerik=icerik, kisisel_puan=puan
+            )
+            return redirect('dizi_detay', dizi_id=dizi.id)
+
+    yorumlar = dizi.yorumlar.all().order_by('-tarih')
+    return render(request, 'dizi_detay.html', {'dizi': dizi, 'yorumlar': yorumlar})
+
+@login_required(login_url='login')
+def dizi_sil_view(request, dizi_id):
+    dizi = get_object_or_404(Dizi, id=dizi_id, user=request.user)
+    if request.method == "POST":
+        dizi.delete()
+    return redirect('diziler')
