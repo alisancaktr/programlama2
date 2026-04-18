@@ -361,57 +361,52 @@
 <!-- ══ MAIN ══ -->
 <div class="container">
 
-  <div class="section-head">
-    <div class="section-title">⏳ İzlemek İstediklerim</div>
-    <div class="section-line"></div>
-  </div>
-  <div class="dizi-grid">
-  {% for dizi in izlemek_istediklerim %}
-    <div class="dizi-card" style="--i: {{ forloop.counter }};">
-      
-      <div class="dizi-rating">{{ dizi.puan|stringformat:".1f" }}</div>
-      
-      <div class="dizi-watchlist-btn">⏳</div>
-
-      <img src="{{ dizi.afis_url }}" alt="{{ dizi.baslik }}">
-
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">{{ dizi.baslik }}</div>
-        <div class="dizi-overlay-meta">Dizi Listem</div>
-      </div>
-
+    <div class="section-head" style="margin-top: 40px;">
+        <div class="section-title">⏳ İzlemek İstediklerim</div>
+        <div class="section-line"></div>
     </div>
-  {% empty %}
-    <div style="color: var(--muted); padding: 2rem;">Henüz dizi eklenmemiş.</div>
-  {% endfor %}
-</div>
-
-  <div style="margin-top: 50px;"></div>
-
-  <div class="section-head">
-    <div class="section-title">✅ İzlediğim Diziler</div>
-</div>
-
-<div class="dizi-grid">
-  {% for dizi in izlediklerim %}
-    <div class="dizi-card" style="--i: {{ forloop.counter }};">
-      
-      <div class="dizi-rating">{{ dizi.puan|stringformat:".1f" }}</div>
-      
-      <img src="{{ dizi.afis_url }}" alt="{{ dizi.baslik }}">
-
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">{{ dizi.baslik }}</div>
-        <div class="dizi-overlay-meta">Tamamlandı</div>
-      </div>
-
+    
+    <div class="dizi-grid">
+        {% for dizi in izlemek_istediklerim %}
+        <a href="{% url 'dizi_detay' dizi.id %}" style="text-decoration: none; color: inherit;">
+            <div class="dizi-card">
+                <img src="{{ dizi.afis_url }}" class="dizi-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+                <div class="dizi-rating">{{ dizi.puan|floatformat:1 }}</div>
+                <div class="dizi-overlay">
+                    <div class="dizi-overlay-title">{{ dizi.baslik }}</div>
+                    <div class="dizi-overlay-meta">Detaylar ve Yorumlar</div>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <p style="color: #666; padding: 20px;">İzlenecek dizi eklenmedi.</p>
+        {% endfor %}
     </div>
-  {% empty %}
-    <div style="color: var(--muted); padding: 1rem;">Henüz tamamlanmış bir dizi yok.</div>
-  {% endfor %}
-</div>
+
+    <div class="section-head" style="margin-top: 60px;">
+        <div class="section-title">✅ İzlediğim Diziler</div>
+        <div class="section-line"></div>
+    </div>
+
+    <div class="dizi-grid">
+        {% for dizi in izlediklerim %}
+        <a href="{% url 'dizi_detay' dizi.id %}" style="text-decoration: none; color: inherit;">
+            <div class="dizi-card">
+                <img src="{{ dizi.afis_url }}" class="dizi-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+                <div class="dizi-rating">{{ dizi.puan|floatformat:1 }}</div>
+                <div class="dizi-overlay">
+                    <div class="dizi-overlay-title">{{ dizi.baslik }}</div>
+                    <div class="dizi-overlay-meta">Detaylar ve Yorumlar</div>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <p style="color: #666; padding: 20px;">Henüz biten bir dizi yok.</p>
+        {% endfor %}
+    </div>
 
 </div>
+
 
 <script>
   const cards = document.querySelectorAll('#diziGrid .dizi-card');
