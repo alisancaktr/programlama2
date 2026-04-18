@@ -319,17 +319,21 @@
     <div class="section-title">⏳ Okumak İstediklerim</div>
   </div>
   <div class="kitap-grid">
-    {% for kitap in okumak_istediklerim %}
+  {% for kitap in okumak_istediklerim %}
+  <a href="{% url 'kitap_detay' kitap.id %}" style="text-decoration: none; color: inherit;">
     <div class="kitap-card">
       <div class="kitap-poster-ph">
         <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
       </div>
-      <div class="kitap-rating">{{ kitap.puan }}</div>
+      
+      <div class="kitap-rating">{{ kitap.puan|stringformat:".1f" }}</div>
+      
       <div class="kitap-overlay">
         <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
-        <div class="kitap-overlay-meta">Kütüphanenizde</div>
+        <div class="kitap-overlay-meta">Detayları Gör</div>
       </div>
     </div>
+  </a>
     {% empty %}
     <p style="color: #666; padding: 20px;">Bu listede henüz kitap yok.</p>
     {% endfor %}
@@ -337,21 +341,23 @@
 
   <div style="margin-top: 40px;"></div>
 
-  <div class="section-head">
+ <div class="section-head">
     <div class="section-title">✅ Okuduklarım</div>
   </div>
   <div class="kitap-grid">
     {% for kitap in okuduklarim %}
-    <div class="kitap-card">
-      <div class="kitap-poster-ph">
-        <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+    <a href="{% url 'kitap_detay' kitap.id %}" style="text-decoration: none; color: inherit;">
+      <div class="kitap-card">
+        <div class="kitap-poster-ph">
+          <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        </div>
+        <div class="kitap-rating">{{ kitap.puan }}</div>
+        <div class="kitap-overlay">
+          <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
+          <div class="kitap-overlay-meta">Detayları Gör</div> 
+        </div>
       </div>
-      <div class="kitap-rating">{{ kitap.puan }}</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
-        <div class="kitap-overlay-meta">Okundu</div>
-      </div>
-    </div>
+    </a>
     {% empty %}
     <p style="color: #666; padding: 20px;">Henüz bitirdiğiniz bir kitap yok.</p>
     {% endfor %}
