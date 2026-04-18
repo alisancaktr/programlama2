@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Folio — {{ film.baslik }} Detay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --accent: #f1c40f; /* Filmler için altın sarısı tonu daha şık durabilir */
+      --text: #ffffff;
+      --muted: #888888;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body { 
+      background: var(--bg); 
+      color: var(--text); 
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    nav { padding: 1.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 2rem; }
+    .back-btn { color: var(--accent); text-decoration: none; font-weight: 500; }
+
+    .detay-header { display: flex; gap: 40px; flex-wrap: wrap; margin-top: 2rem; }
+    .poster-container { width: 300px; }
+    .detay-poster { 
+      width: 100%; border-radius: 12px; 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .info-container { flex: 1; min-width: 300px; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 0.5rem; }
+    .yonetmen { font-size: 1.5rem; color: var(--accent); margin-bottom: 1.5rem; }
+
+    .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .meta-box { background: var(--surface); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+    .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .value { font-weight: 600; margin-top: 5px; }
+
+    .ozet { background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; margin-top: 2rem; color: #ccc; }
+
+    .comment-section { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05); }
+    .comment-form { background: var(--surface); padding: 2rem; border-radius: 15px; margin-top: 1rem; }
+    textarea { 
+      width: 100%; background: #000; border: 1px solid #333; 
+      border-radius: 8px; color: #fff; padding: 1rem; margin: 1rem 0; font-family: inherit;
+    }
+    .btn { background: var(--accent); color: #000; border: none; padding: 12px 30px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+    .comment-list { margin-top: 2rem; }
+    .comment { padding: 1.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .c-user { color: var(--accent); font-weight: 600; }
+    .c-puan { color: #f1c40f; float: right; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <a href="{% url 'filmler' %}" class="back-btn">← Film Listeme Dön</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="detay-header">
+      <div class="poster-container">
+        <img src="{{ film.afis_url }}" class="detay-poster" alt="{{ film.baslik }}">
+      </div>
+
+      <div class="info-container">
+        <h1>{{ film.baslik }}</h1>
+        <p class="yonetmen">{{ film.yazar|default:"Bilinmeyen Yönetmen" }}</p>
+
+        <div class="meta-grid">
+          <div class="meta-box"><p class="label">Süre</p><p class="value">{{ film.sayfa_sayisi|default:"-" }} dk</p></div>
+          <div class="meta-box"><p class="label">Yıl</p><p class="value">{{ film.basim_yili|default:"-" }}</p></div>
+          <div class="meta-box"><p class="label">Durum</p><p class="value">{{ film.get_liste_durumu_display }}</p></div>
+          <div class="meta-box"><p class="label">IMDb</p><p class="value">⭐ {{ film.puan|stringformat:".1f" }}</p></div>
+        </div>
+
+        <h3>Film Özeti</h3>
+        <div class="ozet">
+          {{ film.ozet|default:"Bu film için henüz özet bilgisi girilmemiş." }}
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
+            <form action="{% url 'film_sil' film.id %}" method="POST" onsubmit="return confirm('Bu filmi listenden silmek istediğine emin misin?');">
+                {% csrf_token %}
+                <button type="submit" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    🗑️ Filmi Sil
+                </button>
+            </form>
+        </div>
+      </div> 
+    </div>
+
+    <div class="comment-section">
+      <h2>Film Hakkında Düşüncelerin</h2>
+      <form method="POST" class="comment-form">
+        {% csrf_token %}
+        <label>Senin Puanın:</label>
+        <select name="kisisel_puan" style="background:#000; color:#fff; padding:5px;">
+          {% for i in "1234567891" %} <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+          {% endfor %}
+          <option value="10">10</option>
+        </select>
+        <textarea name="icerik" rows="4" placeholder="Film hakkında ne düşünüyorsun? Karakterler, senaryo, çekimler..." required></textarea>
+        <button type="submit" class="btn">Yorumu Kaydet</button>
+      </form>
+
+      <div class="comment-list">
+        {% for yorum in yorumlar %}
+          <div class="comment">
+            <span class="c-user">@{{ yorum.user.username }}</span>
+            <span class="c-puan">⭐ {{ yorum.kisisel_puan }}/10</span>
+            <p style="margin-top:10px;">{{ yorum.icerik }}</p>
+          </div>
+        {% empty %}
+          <p style="color: var(--muted); margin-top: 1rem;">Henüz yorum yok. İlk yorumu sen yap!</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

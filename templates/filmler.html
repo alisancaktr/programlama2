@@ -383,13 +383,18 @@
 
 <div class="film-grid">
     {% for film in izlemek_istediklerim %}
-    <div class="film-card">
-        <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
-        <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
-        <div class="film-overlay">
-            <div class="film-overlay-title">{{ film.baslik }}</div>
+    <a href="{% url 'film_detay' film.id %}" style="text-decoration: none; color: inherit;">
+        <div class="film-card">
+            <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+            <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
+            <div class="film-overlay">
+                <div class="film-overlay-title">{{ film.baslik }}</div>
+                <div class="film-overlay-meta">Detaylar ve Yorumlar</div>
+            </div>
         </div>
-    </div>
+    </a>
+    {% empty %}
+    <p style="color: #666; padding: 20px;">İzleme listeniz henüz boş.</p>
     {% endfor %}
 </div>
 
@@ -401,13 +406,18 @@
 
 <div class="film-grid">
     {% for film in izlediklerim %}
-    <div class="film-card">
-        <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
-        <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
-        <div class="film-overlay">
-            <div class="film-overlay-title">{{ film.baslik }}</div>
+    <a href="{% url 'film_detay' film.id %}" style="text-decoration: none; color: inherit;">
+        <div class="film-card">
+            <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+            <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
+            <div class="film-overlay">
+                <div class="film-overlay-title">{{ film.baslik }}</div>
+                <div class="film-overlay-meta">Detaylar ve Yorumlar</div>
+            </div>
         </div>
-    </div>
+    </a>
+    {% empty %}
+    <p style="color: #666; padding: 20px;">Henüz izlenmiş bir film yok.</p>
     {% endfor %}
 </div>
 
