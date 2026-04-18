@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Yeni Kitap Ekle | Folio</title>
     <style>
-        /* Tasarımı aynen koruyoruz */
+        /* Mevcut tasarımlarını aynen korudum */
         body { background-color: #0a0a0a; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .form-card { background: #141414; padding: 40px; border-radius: 15px; border: 1px solid #222; width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         h1 { color: #f1c40f; font-size: 24px; margin-bottom: 10px; }
@@ -12,16 +12,10 @@
         .input-group { margin-bottom: 20px; position: relative; }
         input, select { width: 100%; padding: 12px; background: #1f1f1f; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; margin-bottom: 10px; }
         input:focus { border-color: #f1c40f; outline: none; }
-        
-        /* Arama Sonuçları İçin Stil */
-        #results { 
-            background: #1f1f1f; border-radius: 8px; max-height: 200px; overflow-y: auto; 
-            position: absolute; width: 100%; z-index: 10; border: 1px solid #333; display: none;
-        }
+        #results { background: #1f1f1f; border-radius: 8px; max-height: 200px; overflow-y: auto; position: absolute; width: 100%; z-index: 10; border: 1px solid #333; display: none; }
         .result-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 10px; font-size: 13px; }
         .result-item:hover { background: #333; }
         .result-item img { width: 35px; border-radius: 4px; }
-
         .btn-save { background: #f1c40f; color: #000; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px; }
         .btn-save:hover { background: #d4af37; transform: translateY(-2px); }
         .cancel-link { display: block; text-align: center; margin-top: 15px; color: #888; text-decoration: none; font-size: 14px; }
@@ -44,6 +38,10 @@
             <input type="hidden" name="baslik" id="id_baslik">
             <input type="hidden" name="afis_url" id="id_afis_url">
             <input type="hidden" name="puan" id="id_puan">
+            <input type="hidden" name="yazar" id="id_yazar">
+            <input type="hidden" name="sayfa_sayisi" id="id_sayfa_sayisi">
+            <input type="hidden" name="basim_yili" id="id_basim_yili">
+            <input type="hidden" name="ozet" id="id_ozet">
 
             <div class="input-group">
                 <label>Hangi Listeye Eklensin?</label>
@@ -58,51 +56,77 @@
         </form>
     </div>
 
-    <script>
-        const searchInput = document.getElementById('kitap-ara');
-        const resultsDiv = document.getElementById('results');
+ <script>
+    const searchInput = document.getElementById('kitap-ara');
+    const resultsDiv = document.getElementById('results');
+    let timeout = null;
 
-        searchInput.addEventListener('input', function() {
-            const query = this.value;
-            if (query.length > 2) {
-                // Google Books API üzerinden arama yapıyoruz
-                fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=5`)
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        clearTimeout(timeout);
+
+        if (query.length > 2) {
+            timeout = setTimeout(() => {
+                console.log("Open Library üzerinden aranıyor:", query);
+                
+                // Google yerine Open Library API kullanıyoruz (Hata 429 almazsın)
+                fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`)
                     .then(response => response.json())
                     .then(data => {
                         resultsDiv.innerHTML = '';
-                        resultsDiv.style.display = 'block';
                         
-                        if (data.items) {
-                            data.items.forEach(item => {
-                                const info = item.volumeInfo;
-                                const title = info.title;
-                                const cover = info.imageLinks ? info.imageLinks.thumbnail : 'https://via.placeholder.com/128x192?text=Yok';
-                                const rating = info.averageRating || 0;
+                        if (data.docs && data.docs.length > 0) {
+                            resultsDiv.style.display = 'block';
+                            
+                            data.docs.forEach(book => {
+                                const title = book.title || "İsimsiz Kitap";
+                                const authors = book.author_name ? book.author_name.join(', ') : 'Bilinmeyen Yazar';
+                                // Kapak resmi (M = Medium boy)
+                                const cover = book.cover_i 
+                                    ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` 
+                                    : 'https://via.placeholder.com/128x192?text=Kapak+Yok';
 
                                 const div = document.createElement('div');
                                 div.className = 'result-item';
-                                div.innerHTML = `<img src="${cover}"> <span>${title}</span>`;
+                                div.innerHTML = `
+                                    <img src="${cover}" style="width:40px; border-radius:4px;">
+                                    <div style="display:flex; flex-direction:column;">
+                                        <strong style="color:white;">${title}</strong>
+                                        <small style="color:#aaa;">${authors}</small>
+                                    </div>
+                                `;
                                 
                                 div.onclick = function() {
+                                    // Form alanlarını doldur
                                     document.getElementById('id_baslik').value = title;
                                     document.getElementById('id_afis_url').value = cover;
-                                    document.getElementById('id_puan').value = rating;
+                                    document.getElementById('id_yazar').value = authors;
+                                    document.getElementById('id_puan').value = book.ratings_average ? (book.ratings_average * 2).toFixed(1) : 0;
+                                    document.getElementById('id_sayfa_sayisi').value = book.number_of_pages_median || 0;
+                                    document.getElementById('id_basim_yili').value = book.first_publish_year || '';
+                                    document.getElementById('id_ozet').value = book.first_sentence ? book.first_sentence[0] : title + " adlı eser.";
+
                                     searchInput.value = title;
                                     resultsDiv.style.display = 'none';
                                 };
                                 resultsDiv.appendChild(div);
                             });
+                        } else {
+                            resultsDiv.style.display = 'none';
                         }
+                    })
+                    .catch(error => {
+                        console.error('Sistem Hatası:', error);
                     });
-            } else {
-                resultsDiv.style.display = 'none';
-            }
-        });
+            }, 500); // 500ms bekleme (Debounce)
+        } else {
+            resultsDiv.style.display = 'none';
+        }
+    });
 
-        // Dışarı tıklayınca sonuçları kapat
-        document.addEventListener('click', function(e) {
-            if (e.target !== searchInput) resultsDiv.style.display = 'none';
-        });
-    </script>
+    document.addEventListener('click', (e) => {
+        if (e.target !== searchInput) resultsDiv.style.display = 'none';
+    });
+</script>
 </body>
 </html>
