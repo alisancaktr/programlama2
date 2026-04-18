@@ -185,50 +185,84 @@
     }
     .see-all:hover { opacity: 0.7; }
 
-    /* ═══════ DIZI GRID ═══════ */
+/* ═══════ DIZI GRID ═══════ */
     .dizi-grid {
-      display: grid; grid-template-columns: repeat(6, 1fr);
-      gap: 0.9rem; margin-bottom: 3rem;
+      display: grid; 
+      /* Ekran genişliğine göre otomatik ayarlanan grid yapısı */
+      grid-template-columns: repeat(auto-fill, 160px); 
+      justify-content: start;
+      gap: 1.5rem; 
     }
+
     .dizi-card {
-      position: relative; border-radius: 8px; overflow: hidden;
-      aspect-ratio: 2/3; background: var(--surface2);
-      cursor: pointer; transition: transform 0.22s;
+      position: relative; 
+      border-radius: 12px; /* Köşeleri biraz daha yuvarlattık */
+      overflow: hidden; 
+      aspect-ratio: 2/3; 
+      background: var(--surface2);
+      cursor: pointer; 
+      transition: transform 0.22s, box-shadow 0.22s;
       animation: fadeUp 0.5s ease both;
       border: 1px solid var(--border);
     }
-    .dizi-card:hover { transform: translateY(-5px) scale(1.02); border-color: rgba(168,126,232,0.25); }
-    .dizi-card:nth-child(1)  { animation-delay: 0.05s; }
-    .dizi-card:nth-child(2)  { animation-delay: 0.09s; }
-    .dizi-card:nth-child(3)  { animation-delay: 0.13s; }
-    .dizi-card:nth-child(4)  { animation-delay: 0.17s; }
-    .dizi-card:nth-child(5)  { animation-delay: 0.21s; }
-    .dizi-card:nth-child(6)  { animation-delay: 0.25s; }
-    .dizi-card:nth-child(7)  { animation-delay: 0.29s; }
-    .dizi-card:nth-child(8)  { animation-delay: 0.33s; }
-    .dizi-card:nth-child(9)  { animation-delay: 0.37s; }
-    .dizi-card:nth-child(10) { animation-delay: 0.41s; }
-    .dizi-card:nth-child(11) { animation-delay: 0.45s; }
-    .dizi-card:nth-child(12) { animation-delay: 0.49s; }
 
-    .dizi-poster-ph {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
+    /* Resmin kartın içine tam sığmasını sağlayan kritik dokunuş */
+    .dizi-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Resmi ezmeden kutuya sığdırır */
+      display: block;
     }
+
+    .dizi-card:hover { 
+      transform: translateY(-8px) scale(1.03); 
+      border-color: rgba(168,126,232,0.5);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    /* Animasyon gecikmelerini basitleştirdik */
+    .dizi-card:nth-child(n) { animation-delay: calc(0.04s * var(--i, 1)); }
+
     .dizi-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(0deg, rgba(10,10,10,0.95) 0%, transparent 55%);
-      opacity: 0; transition: opacity 0.22s;
-      display: flex; flex-direction: column; justify-content: flex-end; padding: 0.65rem;
+      position: absolute; 
+      inset: 0;
+      background: linear-gradient(0deg, rgba(10,10,10,0.95) 0%, transparent 60%);
+      opacity: 0; 
+      transition: opacity 0.3s;
+      display: flex; 
+      flex-direction: column; 
+      justify-content: flex-end; 
+      padding: 1rem;
     }
+
     .dizi-card:hover .dizi-overlay { opacity: 1; }
-    .dizi-overlay-title { font-size: 0.72rem; font-weight: 600; line-height: 1.3; }
-    .dizi-overlay-meta  { font-size: 0.6rem; color: var(--muted); margin-top: 0.15rem; }
+
+    .dizi-overlay-title { 
+      font-size: 0.85rem; 
+      font-weight: 700; 
+      line-height: 1.2; 
+      color: #fff;
+    }
+
+    .dizi-overlay-meta { 
+      font-size: 0.7rem; 
+      color: var(--muted); 
+      margin-top: 0.25rem; 
+    }
+
     .dizi-rating {
-      position: absolute; top: 0.45rem; right: 0.45rem;
-      background: rgba(10,10,10,0.8); backdrop-filter: blur(6px);
-      font-size: 0.65rem; font-weight: 600; color: var(--accent);
-      padding: 0.18rem 0.4rem; border-radius: 4px;
+      position: absolute; 
+      top: 0.6rem; 
+      right: 0.6rem;
+      background: rgba(10,10,10,0.85); 
+      backdrop-filter: blur(8px);
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      color: #f1c40f; /* Altın sarısı puan rengi */
+      padding: 0.25rem 0.5rem; 
+      border-radius: 6px;
+      z-index: 2;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     /* Sezon rozeti */
     .dizi-seasons {
@@ -259,14 +293,21 @@
     }
 
     /* ═══════ RESPONSIVE ═══════ */
-    @media (max-width: 1100px) { .dizi-grid { grid-template-columns: repeat(5, 1fr); } }
-    @media (max-width: 900px)  { .dizi-grid { grid-template-columns: repeat(4, 1fr); } }
+    /* Aşağıdaki satırları basitleştiriyoruz. 
+       Zaten yukarıda auto-fill kullandığımız için 
+       sütun sayısını elle (5, 4, 3 diye) zorlamaya gerek yok.
+    */
     @media (max-width: 600px) {
       nav { padding: 0 1rem; }
       .nav-links { display: none; }
       .container { padding: 0 1rem; }
       .page-header { padding: 2rem 1rem 1.5rem; }
-      .dizi-grid { grid-template-columns: repeat(3, 1fr); }
+      
+      /* Mobilde afişler çok küçülmesin diye minmax değerini biraz artırabiliriz */
+      .dizi-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+        gap: 0.8rem;
+      }
     }
   </style>
 </head>
@@ -320,167 +361,55 @@
 <!-- ══ MAIN ══ -->
 <div class="container">
 
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <span class="filter-label">Tür</span>
-    <button class="filter-btn active" data-filter-type="genre" data-value="">Tümü</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="dram">Dram</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="bilim-kurgu">Bilim Kurgu</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="gerilim">Gerilim</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="komedi">Komedi</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="fantastik">Fantastik</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="belgesel">Belgesel</button>
-    <div class="filter-sep"></div>
-    <button class="filter-btn" data-filter-type="year" data-value="2024">2024</button>
-    <button class="filter-btn" data-filter-type="year" data-value="2023">2023</button>
-    <button class="filter-btn" data-filter-type="year" data-value="2022">2022</button>
-    <select class="sort-select" id="sortSelect">
-      <option value="rating">Puana Göre</option>
-      <option value="newest">Yeniden Eskiye</option>
-      <option value="oldest">Eskiden Yeniye</option>
-    </select>
-  </div>
-
-  <!-- Popüler Diziler -->
   <div class="section-head">
-    <div class="section-title">Popüler Diziler</div>
-    <a href="#" class="see-all">Tümünü gör →</a>
+    <div class="section-title">⏳ İzlemek İstediklerim</div>
+    <div class="section-line"></div>
   </div>
-  <div class="dizi-grid" id="diziGrid">
+  <div class="dizi-grid">
+  {% for dizi in izlemek_istediklerim %}
+    <div class="dizi-card" style="--i: {{ forloop.counter }};">
+      
+      <div class="dizi-rating">{{ dizi.puan|stringformat:".1f" }}</div>
+      
+      <div class="dizi-watchlist-btn">⏳</div>
 
-    <div class="dizi-card" data-genre="fantastik" data-year="2024">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#1a0d0d,#3a1a0a)">⚔️</div>
-      <div class="dizi-rating">4.8</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S1</div>
+      <img src="{{ dizi.afis_url }}" alt="{{ dizi.baslik }}">
+
       <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Shōgun</div>
-        <div class="dizi-overlay-meta">2024 · Fantastik/Tarih</div>
+        <div class="dizi-overlay-title">{{ dizi.baslik }}</div>
+        <div class="dizi-overlay-meta">Dizi Listem</div>
       </div>
-    </div>
 
-    <div class="dizi-card" data-genre="dram" data-year="2024">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#0d0d2e,#1a1a4a)">🏢</div>
-      <div class="dizi-rating">4.6</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S2</div>
+    </div>
+  {% empty %}
+    <div style="color: var(--muted); padding: 2rem;">Henüz dizi eklenmemiş.</div>
+  {% endfor %}
+</div>
+
+  <div style="margin-top: 50px;"></div>
+
+  <div class="section-head">
+    <div class="section-title">✅ İzlediğim Diziler</div>
+</div>
+
+<div class="dizi-grid">
+  {% for dizi in izlediklerim %}
+    <div class="dizi-card" style="--i: {{ forloop.counter }};">
+      
+      <div class="dizi-rating">{{ dizi.puan|stringformat:".1f" }}</div>
+      
+      <img src="{{ dizi.afis_url }}" alt="{{ dizi.baslik }}">
+
       <div class="dizi-overlay">
-        <div class="dizi-overlay-title">The Penguin</div>
-        <div class="dizi-overlay-meta">2024 · Dram/Gerilim</div>
+        <div class="dizi-overlay-title">{{ dizi.baslik }}</div>
+        <div class="dizi-overlay-meta">Tamamlandı</div>
       </div>
-    </div>
 
-    <div class="dizi-card" data-genre="bilim-kurgu" data-year="2024">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#1a1a0d,#2e2e0d)">🏗️</div>
-      <div class="dizi-rating">4.5</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S2</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Silo</div>
-        <div class="dizi-overlay-meta">2024 · Bilim Kurgu</div>
-      </div>
     </div>
-
-    <div class="dizi-card" data-genre="bilim-kurgu" data-year="2024">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#1a0d1a,#2e0d2e)">☢️</div>
-      <div class="dizi-rating">4.7</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S1</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Fallout</div>
-        <div class="dizi-overlay-meta">2024 · Bilim Kurgu</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="dram" data-year="2023">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#0d1a2e,#0d2e3a)">🎭</div>
-      <div class="dizi-rating">4.4</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S4</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Succession</div>
-        <div class="dizi-overlay-meta">2023 · Dram</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="gerilim" data-year="2023">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#2e1a0d,#3a2a0d)">🔪</div>
-      <div class="dizi-rating">4.3</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S3</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">The Bear</div>
-        <div class="dizi-overlay-meta">2023 · Dram/Gerilim</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="fantastik" data-year="2022">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#1a0d0d,#2e0d0d)">🐉</div>
-      <div class="dizi-rating">4.2</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S2</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">House of the Dragon</div>
-        <div class="dizi-overlay-meta">2022 · Fantastik</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="bilim-kurgu" data-year="2022">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#0d1a0d,#0d2e1a)">🪐</div>
-      <div class="dizi-rating">4.5</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S2</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Andor</div>
-        <div class="dizi-overlay-meta">2022 · Bilim Kurgu</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="gerilim" data-year="2023">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#2e2e0d,#3a3a0d)">🕵️</div>
-      <div class="dizi-rating">4.1</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S1</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">True Detective: Night Country</div>
-        <div class="dizi-overlay-meta">2024 · Gerilim</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="komedi" data-year="2023">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#0d2e2e,#0d3a2e)">😂</div>
-      <div class="dizi-rating">4.3</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S2</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Abbott Elementary</div>
-        <div class="dizi-overlay-meta">2023 · Komedi</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="belgesel" data-year="2024">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#1a1a2e,#2e1a3a)">🌍</div>
-      <div class="dizi-rating">4.6</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S1</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Ripley</div>
-        <div class="dizi-overlay-meta">2024 · Gerilim/Dram</div>
-      </div>
-    </div>
-
-    <div class="dizi-card" data-genre="dram" data-year="2024">
-      <div class="dizi-poster-ph" style="background:linear-gradient(135deg,#2e0d1a,#3a0d2e)">🌹</div>
-      <div class="dizi-rating">4.0</div>
-      <div class="dizi-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="dizi-seasons">S1</div>
-      <div class="dizi-overlay">
-        <div class="dizi-overlay-title">Baby Reindeer</div>
-        <div class="dizi-overlay-meta">2024 · Dram</div>
-      </div>
-    </div>
-
-  </div>
+  {% empty %}
+    <div style="color: var(--muted); padding: 1rem;">Henüz tamamlanmış bir dizi yok.</div>
+  {% endfor %}
+</div>
 
 </div>
 

@@ -1,13 +1,18 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Dizi(models.Model):
-    baslik = models.CharField(max_length=200)
-    tur = models.CharField(max_length=100, blank=True, null=True)
-    sezon_sayisi = models.IntegerField(default=1, blank=True, null=True)
-    bolum_sayisi = models.IntegerField(default=0, blank=True, null=True)
-    puan = models.FloatField(default=0.0, blank=True, null=True)
-    afis = models.ImageField(upload_to='dizi_afisler/', blank=True, null=True)
-    aciklama = models.TextField(blank=True, null=True)
+    DURUM_CHOICES = [
+        ('izlemek_istediklerim', 'İzlemek İstediklerim'),
+        ('izlediklerim', 'İzlediklerim'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    baslik = models.CharField(max_length=255)
+    afis_url = models.URLField(max_length=500, blank=True, null=True)
+    puan = models.FloatField(default=0)
+    liste_durumu = models.CharField(max_length=50, choices=DURUM_CHOICES, default='izlemek_istediklerim')
+    eklenme_tarihi = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.baslik

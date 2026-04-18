@@ -1,24 +1,32 @@
 from django.shortcuts import render, redirect
 from .models import Dizi
-from .forms import DiziForm
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='login')
 def diziler_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    diziler = Dizi.objects.all()
-    return render(request, 'diziler.html', {'diziler': diziler})
+    diziler = Dizi.objects.filter(user=request.user)
+    context = {
+        'izlemek_istediklerim': diziler.filter(liste_durumu='izlemek_istediklerim'),
+        'izlediklerim': diziler.filter(liste_durumu='izlediklerim')
+    }
+    return render(request, 'diziler.html', context)
 
+@login_required(login_url='login')
 def dizi_ekle_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     if request.method == 'POST':
-        # Dizi verilerini ve afişini yakala
-        form = DiziForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('diziler')
-    else:
-        form = DiziForm()
+        baslik = request.POST.get('baslik')
+        afis_url = request.POST.get('afis_url')
+        puan = request.POST.get('puan')
+        liste_durumu = request.POST.get('liste_durumu')
 
-    return render(request, 'dizi_ekle.html', {'form': form})
+        if baslik:
+            Dizi.objects.create(
+                user=request.user,
+                baslik=baslik,
+                afis_url=afis_url,
+                puan=float(puan) if puan and puan != 'undefined' else 0,
+                liste_durumu=liste_durumu
+            )
+            return redirect('diziler')
+            
+    return render(request, 'dizi_ekle.html')

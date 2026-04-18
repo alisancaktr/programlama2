@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from ana_sayfa.views import (
-    index_view, login_view, logout_view, dashboard_view,
-    diziler_view, dizi_ekle_view # Kitapları buradan sildik!
+    index_view, login_view, logout_view, dashboard_view
 )
 
 urlpatterns = [
@@ -12,13 +11,12 @@ urlpatterns = [
     path('dashboard/', dashboard_view, name='dashboard'),
     path('logout/', logout_view, name='logout'),
     
-    # Filmler (Zaten böyleydi)
+    # Filmler - Tüm işler movies/urls.py içinde
     path('filmler/', include('movies.urls')),
     
-    # Kitaplar (YENİ SİSTEM: Tüm kitap işlerini books/urls.py yönetecek)
+    # Kitaplar - Tüm işler books/urls.py içinde
     path('kitaplar/', include('books.urls')),
     
-    # Diziler (Şimdilik burada kalsın, birazdan bunu da ayıracağız)
-    path('diziler/', diziler_view, name='diziler'),
-    path('dizi-ekle/', dizi_ekle_view, name='dizi_ekle'),
+    # Diziler - Tüm işler series/urls.py içinde
+    path('diziler/', include('series.urls')),
 ]
