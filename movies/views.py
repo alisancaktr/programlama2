@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from .models import Film
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Film, FilmYorum
 from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='login')
@@ -54,3 +54,34 @@ def film_ekle_view(request):
             print("⚠️ HATA: Başlık boş olduğu için 'if baslik' içine girilemedi!")
 
     return render(request, 'film_ekle.html')
+
+
+@login_required(login_url='login')
+def film_detay_view(request, film_id):
+    film = get_object_or_404(Film, id=film_id)
+    
+    if request.method == "POST":
+        icerik = request.POST.get('icerik')
+        puan = request.POST.get('kisisel_puan')
+        
+        if icerik:
+            FilmYorum.objects.create(
+                film=film,
+                user=request.user,
+                icerik=icerik,
+                kisisel_puan=puan
+            )
+            return redirect('film_detay', film_id=film.id)
+
+    yorumlar = film.yorumlar.all().order_by('-tarih')
+    return render(request, 'film_detay.html', {
+        'film': film,
+        'yorumlar': yorumlar
+    })
+
+@login_required(login_url='login')
+def film_sil_view(request, film_id):
+    film = get_object_or_404(Film, id=film_id, user=request.user)
+    if request.method == "POST":
+        film.delete()
+    return redirect('filmler') # 'filmler' ana sayfa name'i neyse o
