@@ -1,12 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Kitap(models.Model):
-    baslik = models.CharField(max_length=200)
-    yazar = models.CharField(max_length=200, blank=True, null=True) # Boş olabilir
-    tur = models.CharField(max_length=100, blank=True, null=True)   # Boş olabilir
-    sayfa_sayisi = models.IntegerField(default=0, blank=True, null=True)
-    ozet = models.TextField(blank=True, null=True)
-    kapak_resmi = models.ImageField(upload_to='kitaplar/', blank=True, null=True)
+    DURUM_CHOICES = [
+        ('okumak_istediklerim', 'Okumak İstediklerim'),
+        ('okuduklarim', 'Okuduklarım'),
+    ]
+
+    # 'on_ hisse_delete' kısmını 'on_delete' olarak düzelttik
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    baslik = models.CharField(max_length=255)
+    afis_url = models.URLField(max_length=500, blank=True, null=True)
+    puan = models.FloatField(default=0)
+    # Karakter sınırını 20'den 50'ye çıkardık ki hata vermesin
+    liste_durumu = models.CharField(max_length=50, choices=DURUM_CHOICES, default='okumak_istediklerim')
+    eklenme_tarihi = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.baslik}"
+        return self.baslik

@@ -1,10 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
-# Tüm view fonksiyonlarını tek bir parantez içinde import edelim
 from ana_sayfa.views import (
     index_view, login_view, logout_view, dashboard_view,
-    filmler_view, diziler_view, kitaplar_view,
-    dizi_ekle_view, kitap_ekle_view
+    diziler_view, dizi_ekle_view # Kitapları buradan sildik!
 )
 
 urlpatterns = [
@@ -14,14 +12,13 @@ urlpatterns = [
     path('dashboard/', dashboard_view, name='dashboard'),
     path('logout/', logout_view, name='logout'),
     
-    # Filmleri yeni oluşturduğumuz movies/urls.py'a yönlendiriyoruz
+    # Filmler (Zaten böyleydi)
     path('filmler/', include('movies.urls')),
     
-    # Diziler
-    path('diziler/', diziler_view, name='diziler'),
-    path('dizi-ekle/', dizi_ekle_view, name='dizi_ekle'), # BU EKSİKTİ, EKLEDİK
+    # Kitaplar (YENİ SİSTEM: Tüm kitap işlerini books/urls.py yönetecek)
+    path('kitaplar/', include('books.urls')),
     
-    # Kitaplar
-    path('kitaplar/', kitaplar_view, name='kitaplar'),
-    path('kitap-ekle/', kitap_ekle_view, name='kitap_ekle'),
+    # Diziler (Şimdilik burada kalsın, birazdan bunu da ayıracağız)
+    path('diziler/', diziler_view, name='diziler'),
+    path('dizi-ekle/', dizi_ekle_view, name='dizi_ekle'),
 ]

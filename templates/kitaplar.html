@@ -306,176 +306,55 @@
         Listem
       </a>
       <a href="{% url 'kitap_ekle' %}" class="btn btn-gold">
-    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-    Kitap Ekle
-</a>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Kitap Ekle
+      </a>
     </div>
   </div>
 </div>
 
-<!-- ══ MAIN ══ -->
 <div class="container">
 
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <span class="filter-label">Tür</span>
-    <button class="filter-btn active" data-filter-type="genre" data-value="">Tümü</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="roman">Roman</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="bilim-kurgu">Bilim Kurgu</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="fantastik">Fantastik</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="deneme">Deneme</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="biyografi">Biyografi</button>
-    <button class="filter-btn" data-filter-type="genre" data-value="klasik">Klasik</button>
-    <div class="filter-sep"></div>
-    <button class="filter-btn" data-filter-type="year" data-value="2024">2024</button>
-    <button class="filter-btn" data-filter-type="year" data-value="2023">2023</button>
-    <button class="filter-btn" data-filter-type="year" data-value="klasik">Klasikler</button>
-    <select class="sort-select" id="sortSelect">
-      <option value="rating">Puana Göre</option>
-      <option value="newest">Yeniden Eskiye</option>
-      <option value="oldest">Eskiden Yeniye</option>
-    </select>
-  </div>
-
-  <!-- Popüler Kitaplar -->
   <div class="section-head">
-    <div class="section-title">Popüler Kitaplar</div>
-    <a href="#" class="see-all">Tümünü gör →</a>
+    <div class="section-title">⏳ Okumak İstediklerim</div>
   </div>
-  <div class="kitap-grid" id="kitapGrid">
-
-    <div class="kitap-card" data-genre="roman" data-year="2023">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d1a2e,#1a2e3a)">🌊</div>
-      <div class="kitap-rating">4.6</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">329 sf.</div>
+  <div class="kitap-grid">
+    {% for kitap in okumak_istediklerim %}
+    <div class="kitap-card">
+      <div class="kitap-poster-ph">
+        <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+      </div>
+      <div class="kitap-rating">{{ kitap.puan }}</div>
       <div class="kitap-overlay">
-        <div class="kitap-overlay-title">Intermezzo</div>
-        <div class="kitap-overlay-meta">Sally Rooney · Roman</div>
+        <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
+        <div class="kitap-overlay-meta">Kütüphanenizde</div>
       </div>
     </div>
+    {% empty %}
+    <p style="color: #666; padding: 20px;">Bu listede henüz kitap yok.</p>
+    {% endfor %}
+  </div>
 
-    <div class="kitap-card" data-genre="roman" data-year="2024">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a0d0d,#2e1a1a)">🌹</div>
-      <div class="kitap-rating">4.5</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">464 sf.</div>
+  <div style="margin-top: 40px;"></div>
+
+  <div class="section-head">
+    <div class="section-title">✅ Okuduklarım</div>
+  </div>
+  <div class="kitap-grid">
+    {% for kitap in okuduklarim %}
+    <div class="kitap-card">
+      <div class="kitap-poster-ph">
+        <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+      </div>
+      <div class="kitap-rating">{{ kitap.puan }}</div>
       <div class="kitap-overlay">
-        <div class="kitap-overlay-title">James</div>
-        <div class="kitap-overlay-meta">Percival Everett · Roman</div>
+        <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
+        <div class="kitap-overlay-meta">Okundu</div>
       </div>
     </div>
-
-    <div class="kitap-card" data-genre="biyografi" data-year="2024">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a1a0d,#2e2e0d)">⚡</div>
-      <div class="kitap-rating">4.3</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">688 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">Elon Musk</div>
-        <div class="kitap-overlay-meta">Walter Isaacson · Biyografi</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="roman" data-year="2023">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d2e1a,#0d3a2e)">🍃</div>
-      <div class="kitap-rating">4.4</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">352 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">Klara ve Güneş</div>
-        <div class="kitap-overlay-meta">Kazuo Ishiguro · Roman</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="bilim-kurgu" data-year="klasik">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d0d2e,#1a0d3a)">🪐</div>
-      <div class="kitap-rating">4.8</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">412 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">Dune</div>
-        <div class="kitap-overlay-meta">Frank Herbert · Bilim Kurgu</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="deneme" data-year="2023">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#2e1a0d,#3a2a0d)">📖</div>
-      <div class="kitap-rating">4.2</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">240 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">The Midnight Library</div>
-        <div class="kitap-overlay-meta">Matt Haig · Roman</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="fantastik" data-year="klasik">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a2e0d,#2a3a0d)">🌲</div>
-      <div class="kitap-rating">4.9</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">1178 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">The Lord of the Rings</div>
-        <div class="kitap-overlay-meta">J.R.R. Tolkien · Fantastik</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="roman" data-year="2024">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#2e0d2e,#3a0d3a)">🔮</div>
-      <div class="kitap-rating">4.1</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">384 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">All Fours</div>
-        <div class="kitap-overlay-meta">Miranda July · Roman</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="klasik" data-year="klasik">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#2e2e0d,#3a3a0d)">🕯️</div>
-      <div class="kitap-rating">4.7</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">560 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">Anna Karenina</div>
-        <div class="kitap-overlay-meta">Lev Tolstoy · Klasik</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="biyografi" data-year="klasik">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d2e2e,#0d3a3a)">🍎</div>
-      <div class="kitap-rating">4.5</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">630 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">Steve Jobs</div>
-        <div class="kitap-overlay-meta">Walter Isaacson · Biyografi</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="bilim-kurgu" data-year="klasik">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#1a0d1a,#2e0d2e)">🤖</div>
-      <div class="kitap-rating">4.6</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">288 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">1984</div>
-        <div class="kitap-overlay-meta">George Orwell · Bilim Kurgu</div>
-      </div>
-    </div>
-
-    <div class="kitap-card" data-genre="roman" data-year="2023">
-      <div class="kitap-poster-ph" style="background:linear-gradient(135deg,#0d1a1a,#0d2e2e)">🌙</div>
-      <div class="kitap-rating">4.3</div>
-      <div class="kitap-watchlist-btn" title="Listeye ekle">+</div>
-      <div class="kitap-pages">416 sf.</div>
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">Tomorrow, and Tomorrow, and Tomorrow</div>
-        <div class="kitap-overlay-meta">Gabrielle Zevin · Roman</div>
-      </div>
-    </div>
-
+    {% empty %}
+    <p style="color: #666; padding: 20px;">Henüz bitirdiğiniz bir kitap yok.</p>
+    {% endfor %}
   </div>
 
 </div>
