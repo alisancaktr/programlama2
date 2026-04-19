@@ -56,7 +56,18 @@ def dizi_detay_view(request, dizi_id):
             return redirect('dizi_detay', dizi_id=dizi.id)
 
     yorumlar = dizi.yorumlar.all().order_by('-tarih')
-    return render(request, 'dizi_detay.html', {'dizi': dizi, 'yorumlar': yorumlar})
+
+    # Aynı başlıktaki diğer kullanıcıların dizilerine yapılan yorumlar
+    diger_diziler = Dizi.objects.filter(baslik__iexact=dizi.baslik).exclude(id=dizi.id)
+    diger_yorumlar = DiziYorum.objects.filter(
+        dizi__in=diger_diziler
+    ).exclude(user=request.user).order_by('-tarih')
+
+    return render(request, 'dizi_detay.html', {
+        'dizi': dizi,
+        'yorumlar': yorumlar,
+        'diger_yorumlar': diger_yorumlar,
+    })
 
 @login_required(login_url='login')
 def dizi_sil_view(request, dizi_id):
