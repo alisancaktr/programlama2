@@ -133,6 +133,26 @@
           <p style="color: var(--muted); margin-top: 1rem;">Henüz yorum yok. İlk yorumu sen yap!</p>
         {% endfor %}
       </div>
+
+      {% if diger_yorumlar %}
+      <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05);">
+        <h3 style="margin-bottom: 1rem; color: var(--muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;">
+          Diğer Kullanıcıların Yorumları
+        </h3>
+        <div class="comment-list">
+          {% for yorum in diger_yorumlar %}
+            <div class="comment" style="border-left: 2px solid var(--accent); padding-left: 1rem;">
+              <a href="{% url 'kullanici_profil' yorum.user.id %}" style="color: var(--accent); text-decoration: none; font-weight: 600;">
+                @{{ yorum.user.username }}
+              </a>
+              <span class="c-puan">⭐ {{ yorum.kisisel_puan }}/10</span>
+              <p style="margin-top:10px; color: #bbb;">{{ yorum.icerik }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
     </div>
   </div>
 
