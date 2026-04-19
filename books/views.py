@@ -62,9 +62,17 @@ def kitap_detay_view(request, kitap_id):
             return redirect('kitap_detay', kitap_id=kitap.id)
 
     yorumlar = kitap.yorumlar.all().order_by('-tarih')
+
+    # Aynı başlıktaki diğer kullanıcıların kitaplarına yapılan yorumlar
+    diger_kitaplar = Kitap.objects.filter(baslik__iexact=kitap.baslik).exclude(id=kitap.id)
+    diger_yorumlar = KitapYorum.objects.filter(
+        kitap__in=diger_kitaplar
+    ).exclude(user=request.user).order_by('-tarih')
+
     return render(request, 'kitap_detay.html', {
         'kitap': kitap,
-        'yorumlar': yorumlar
+        'yorumlar': yorumlar,
+        'diger_yorumlar': diger_yorumlar,
     })
 
 @login_required(login_url='login')
