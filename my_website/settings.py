@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'ana_sayfa',
     'movies',
     'series',
+    'sosyal',
     'books',
 ]
 
