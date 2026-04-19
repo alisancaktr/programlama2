@@ -73,10 +73,19 @@ def film_detay_view(request, film_id):
             )
             return redirect('film_detay', film_id=film.id)
 
+    # Kendi kayıtlı filminin yorumları
     yorumlar = film.yorumlar.all().order_by('-tarih')
+
+    # Aynı başlıktaki diğer kullanıcıların filmlerine yapılan yorumlar
+    diger_filmler = Film.objects.filter(baslik__iexact=film.baslik).exclude(id=film.id)
+    diger_yorumlar = FilmYorum.objects.filter(
+        film__in=diger_filmler
+    ).exclude(user=request.user).order_by('-tarih')
+
     return render(request, 'film_detay.html', {
         'film': film,
-        'yorumlar': yorumlar
+        'yorumlar': yorumlar,
+        'diger_yorumlar': diger_yorumlar,
     })
 
 @login_required(login_url='login')
