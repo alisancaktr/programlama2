@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Folio — Arkadaş İstekleri</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0a; --surface: #141414; --accent: #e8c97e;
+      --text: #f0ece4; --muted: rgba(240,236,228,0.45);
+      --border: rgba(255,255,255,0.07);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; gap: 2rem;
+      padding: 0 2.5rem; height: 58px;
+      background: rgba(10,10,10,0.88); backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900;
+      background: linear-gradient(135deg, #e8c97e, #b87f4b);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      text-decoration: none;
+    }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
+    nav a:hover { color: var(--text); }
+    .nav-links { display: flex; gap: 0.5rem; list-style: none; }
+    .nav-links a { padding: 0.4rem 0.8rem; border-radius: 6px; }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 0.5rem; }
+    h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 2rem 0 1rem; color: var(--accent); }
+
+    .kart {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.2rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; margin-bottom: 0.75rem;
+    }
+    .kullanici-bilgi { display: flex; align-items: center; gap: 1rem; }
+    .avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #e8c97e, #b87f4b);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.1rem; color: #000; flex-shrink: 0;
+    }
+    .username { font-weight: 600; }
+    .profil-link { color: var(--muted); font-size: 0.8rem; text-decoration: none; }
+    .profil-link:hover { color: var(--accent); }
+
+    .btn-grup { display: flex; gap: 0.5rem; }
+    .btn {
+      padding: 0.55rem 1.1rem; border-radius: 8px; border: none;
+      font-weight: 600; cursor: pointer; font-size: 0.82rem;
+      font-family: inherit; text-decoration: none; display: inline-block;
+    }
+    .btn-kabul { background: #7ee8b0; color: #000; }
+    .btn-reddet { background: #333; color: #e87e7e; border: 1px solid #e87e7e; }
+    .btn-arkadas-tag { background: #1a3a1a; color: #7ee8b0; cursor: default; border: 1px solid #7ee8b0; }
+
+    .bos { color: var(--muted); padding: 1.5rem; text-align: center;
+           background: var(--surface); border-radius: 12px; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="{% url 'dashboard' %}" class="nav-logo">Folio</a>
+    <ul class="nav-links">
+      <li><a href="{% url 'filmler' %}">Filmler</a></li>
+      <li><a href="{% url 'diziler' %}">Diziler</a></li>
+      <li><a href="{% url 'kitaplar' %}">Kitaplar</a></li>
+      <li><a href="{% url 'kullanici_ara' %}">👥 Ara</a></li>
+      <li><a href="{% url 'arkadas_istekleri' %}" style="color: var(--accent)">İstekler</a></li>
+    </ul>
+    <div style="margin-left:auto;">
+      <a href="{% url 'logout' %}" style="color: var(--muted); font-size:0.85rem;">Çıkış</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>Arkadaş İstekleri</h1>
+
+    <h2>Bekleyen İstekler</h2>
+    {% if bekleyen_istekler %}
+      {% for istek in bekleyen_istekler %}
+        <div class="kart">
+          <div class="kullanici-bilgi">
+            <div class="avatar">{{ istek.gonderen.username|first|upper }}</div>
+            <div>
+              <p class="username">@{{ istek.gonderen.username }}</p>
+              <a href="{% url 'kullanici_profil' istek.gonderen.id %}" class="profil-link">Profili gör →</a>
+            </div>
+          </div>
+          <div class="btn-grup">
+            <a href="{% url 'istek_kabul' istek.id %}" class="btn btn-kabul">✓ Kabul Et</a>
+            <a href="{% url 'istek_reddet' istek.id %}" class="btn btn-reddet">✗ Reddet</a>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="bos">Bekleyen arkadaşlık isteği yok.</div>
+    {% endif %}
+
+    <h2>Arkadaşlarım</h2>
+    {% if arkadaslar %}
+      {% for iliski in arkadaslar %}
+        {% if iliski.gonderen == request.user %}
+          {% with diger=iliski.alici %}
+            <div class="kart">
+              <div class="kullanici-bilgi">
+                <div class="avatar">{{ diger.username|first|upper }}</div>
+                <div>
+                  <p class="username">@{{ diger.username }}</p>
+                  <a href="{% url 'kullanici_profil' diger.id %}" class="profil-link">Profili gör →</a>
+                </div>
+              </div>
+              <span class="btn btn-arkadas-tag">✓ Arkadaş</span>
+            </div>
+          {% endwith %}
+        {% else %}
+          {% with diger=iliski.gonderen %}
+            <div class="kart">
+              <div class="kullanici-bilgi">
+                <div class="avatar">{{ diger.username|first|upper }}</div>
+                <div>
+                  <p class="username">@{{ diger.username }}</p>
+                  <a href="{% url 'kullanici_profil' diger.id %}" class="profil-link">Profili gör →</a>
+                </div>
+              </div>
+              <span class="btn btn-arkadas-tag">✓ Arkadaş</span>
+            </div>
+          {% endwith %}
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="bos">Henüz arkadaşın yok. <a href="{% url 'kullanici_ara' %}" style="color: var(--accent);">Kullanıcı ara →</a></div>
+    {% endif %}
+  </div>
+
+</body>
+</html>
