@@ -19,4 +19,5 @@ urlpatterns = [
     
     # Diziler - Tüm işler series/urls.py içinde
     path('diziler/', include('series.urls')),
+    path('sosyal/', include('sosyal.urls')),
 ]
