@@ -61,7 +61,7 @@
     <script>
         const searchInput = document.getElementById('dizi-ara');
     const resultsDiv = document.getElementById('results');
-    const API_KEY = '27f9cf9c3719c9ff4926880180a9ebef'; // Buraya filmlerdeki anahtarı yapıştır
+    const API_KEY = '1c49901a6b3d423876d5abf0c1e55037'; // Buraya filmlerdeki anahtarı yapıştır
 
     searchInput.addEventListener('input', function() {
         const query = this.value;
@@ -93,8 +93,8 @@
 
                             div.onclick = function() {
                                 document.getElementById('id_baslik').value = title;
-                                document.getElementById('id_afis_url').value = `https://image.tmdb.org/t/p/w500${tv.poster_path}`;
-                                document.getElementById('id_puan').value = tv.vote_average;
+                                document.getElementById('id_afis_url').value = tv.poster_path ? `https://image.tmdb.org/t/p/w500${tv.poster_path}` : '';
+                                document.getElementById('id_puan').value = tv.vote_average || 0;
                                 searchInput.value = title;
                                 resultsDiv.style.display = 'none';
                             };
