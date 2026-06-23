@@ -2,14 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
 
 def index_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
     return render(request, 'index.html')
 
-@csrf_exempt
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -58,12 +56,10 @@ def dashboard_view(request):
     from sosyal.models import ArkadashlikIstegi
     from django.db.models import Q
 
-    # Kullanıcının gerçek istatistikleri
     film_count = Film.objects.filter(user=request.user, liste_durumu='izlediklerim').count()
     dizi_count = Dizi.objects.filter(user=request.user, liste_durumu='izlediklerim').count()
     kitap_count = Kitap.objects.filter(user=request.user, liste_durumu='okuduklarim').count()
 
-    # İzleme/Okuma Listesinden son eklenenler (Maks 4 adet)
     watchlist_films = Film.objects.filter(user=request.user, liste_durumu='izlemek_istediklerim').order_by('-eklenme_tarihi')[:2]
     watchlist_series = Dizi.objects.filter(user=request.user, liste_durumu='izlemek_istediklerim').order_by('-eklenme_tarihi')[:2]
     watchlist_books = Kitap.objects.filter(user=request.user, liste_durumu='okumak_istediklerim').order_by('-eklenme_tarihi')[:2]
@@ -77,7 +73,6 @@ def dashboard_view(request):
         watchlist.append({'type': 'Kitap', 'baslik': b.baslik, 'yil': b.basim_yili or '', 'icon': '📖', 'url': f'/kitaplar/{b.id}/'})
     watchlist = watchlist[:4]
 
-    # Son puanlananlar (Kullanıcının kendi son 3 yorumu/puanı)
     recent_film_reviews = FilmYorum.objects.filter(user=request.user).order_by('-tarih')[:2]
     recent_dizi_reviews = DiziYorum.objects.filter(user=request.user).order_by('-tarih')[:2]
     recent_book_reviews = KitapYorum.objects.filter(user=request.user).order_by('-tarih')[:2]
@@ -91,7 +86,6 @@ def dashboard_view(request):
         recent_reviews.append({'type': 'Kitap', 'baslik': r.kitap.baslik, 'puan': r.kisisel_puan, 'icon': '📖'})
     recent_reviews = recent_reviews[:3]
 
-    # Arkadaşların aktivite akışı (Son 24 saat veya genel son 5 yorum)
     friends_ids = []
     friendships = ArkadashlikIstegi.objects.filter(
         (Q(gonderen=request.user) | Q(alici=request.user)) & Q(durum='kabul_edildi')
@@ -108,94 +102,26 @@ def dashboard_view(request):
 
     activities = []
     for c in friend_film_comments:
-        activities.append({
-            'username': c.user.username,
-            'action': 'izledi',
-            'type_class': 'type-film',
-            'type_lbl': 'Film',
-            'title': c.film.baslik,
-            'year': c.film.basim_yili or '',
-            'rating': c.kisisel_puan,
-            'review': c.icerik,
-            'time': c.tarih,
-            'icon': '🎬'
-        })
+        activities.append({'username': c.user.username, 'action': 'izledi', 'type_class': 'type-film', 'type_lbl': 'Film', 'title': c.film.baslik, 'year': c.film.basim_yili or '', 'rating': c.kisisel_puan, 'review': c.icerik, 'time': c.tarih, 'icon': '🎬'})
     for c in friend_dizi_comments:
-        activities.append({
-            'username': c.user.username,
-            'action': 'izledi',
-            'type_class': 'type-series',
-            'type_lbl': 'Dizi',
-            'title': c.dizi.baslik,
-            'year': c.dizi.basim_yili or '',
-            'rating': c.kisisel_puan,
-            'review': c.icerik,
-            'time': c.tarih,
-            'icon': '📺'
-        })
+        activities.append({'username': c.user.username, 'action': 'izledi', 'type_class': 'type-series', 'type_lbl': 'Dizi', 'title': c.dizi.baslik, 'year': c.dizi.basim_yili or '', 'rating': c.kisisel_puan, 'review': c.icerik, 'time': c.tarih, 'icon': '📺'})
     for c in friend_book_comments:
-        activities.append({
-            'username': c.user.username,
-            'action': 'okudu',
-            'type_class': 'type-book',
-            'type_lbl': 'Kitap',
-            'title': c.kitap.baslik,
-            'year': c.kitap.basim_yili or '',
-            'rating': c.kisisel_puan,
-            'review': c.icerik,
-            'time': c.tarih,
-            'icon': '📖'
-        })
+        activities.append({'username': c.user.username, 'action': 'okudu', 'type_class': 'type-book', 'type_lbl': 'Kitap', 'title': c.kitap.baslik, 'year': c.kitap.basim_yili or '', 'rating': c.kisisel_puan, 'review': c.icerik, 'time': c.tarih, 'icon': '📖'})
 
-    # Eğer arkadaş aktivitesi yoksa platformdaki diğer üyelerin veya kendi son aktivitelerini göster
     if not activities:
         fallback_film = FilmYorum.objects.order_by('-tarih')[:3]
         fallback_dizi = DiziYorum.objects.order_by('-tarih')[:3]
         fallback_book = KitapYorum.objects.order_by('-tarih')[:3]
         for c in fallback_film:
-            activities.append({
-                'username': c.user.username,
-                'action': 'izledi',
-                'type_class': 'type-film',
-                'type_lbl': 'Film',
-                'title': c.film.baslik,
-                'year': c.film.basim_yili or '',
-                'rating': c.kisisel_puan,
-                'review': c.icerik,
-                'time': c.tarih,
-                'icon': '🎬'
-            })
+            activities.append({'username': c.user.username, 'action': 'izledi', 'type_class': 'type-film', 'type_lbl': 'Film', 'title': c.film.baslik, 'year': c.film.basim_yili or '', 'rating': c.kisisel_puan, 'review': c.icerik, 'time': c.tarih, 'icon': '🎬'})
         for c in fallback_dizi:
-            activities.append({
-                'username': c.user.username,
-                'action': 'izledi',
-                'type_class': 'type-series',
-                'type_lbl': 'Dizi',
-                'title': c.dizi.baslik,
-                'year': c.dizi.basim_yili or '',
-                'rating': c.kisisel_puan,
-                'review': c.icerik,
-                'time': c.tarih,
-                'icon': '📺'
-            })
+            activities.append({'username': c.user.username, 'action': 'izledi', 'type_class': 'type-series', 'type_lbl': 'Dizi', 'title': c.dizi.baslik, 'year': c.dizi.basim_yili or '', 'rating': c.kisisel_puan, 'review': c.icerik, 'time': c.tarih, 'icon': '📺'})
         for c in fallback_book:
-            activities.append({
-                'username': c.user.username,
-                'action': 'okudu',
-                'type_class': 'type-book',
-                'type_lbl': 'Kitap',
-                'title': c.kitap.baslik,
-                'year': c.kitap.basim_yili or '',
-                'rating': c.kisisel_puan,
-                'review': c.icerik,
-                'time': c.tarih,
-                'icon': '📖'
-            })
+            activities.append({'username': c.user.username, 'action': 'okudu', 'type_class': 'type-book', 'type_lbl': 'Kitap', 'title': c.kitap.baslik, 'year': c.kitap.basim_yili or '', 'rating': c.kisisel_puan, 'review': c.icerik, 'time': c.tarih, 'icon': '📖'})
 
     activities.sort(key=lambda x: x['time'], reverse=True)
     activities = activities[:5]
 
-    # Popüler İçerikler (En yüksek puanlılar)
     popular_films = Film.objects.order_by('-puan')[:2]
     popular_series = Dizi.objects.order_by('-puan')[:2]
     popular_books = Kitap.objects.order_by('-puan')[:2]
@@ -220,33 +146,3 @@ def dashboard_view(request):
         'popular_items': popular_items,
     }
     return render(request, 'dashboard.html', context)
-
-def filmler_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'filmler.html')
-
-def diziler_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'diziler.html')
-
-def kitaplar_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'kitaplar.html')
-
-def film_ekle_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'film_ekle.html')
-
-def dizi_ekle_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'dizi_ekle.html')
-
-def kitap_ekle_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'kitap_ekle.html')

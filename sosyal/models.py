@@ -33,16 +33,11 @@ class Profil(models.Model):
         return f"{self.user.username} Profili"
 
 
-# Signal to automatically create/save the user profile when a user is created
+# DÜZELTME: Tek bir signal yeterli — profil_kaydet kaldırıldı,
+# profil_olustur sadece yeni kullanıcı oluşturulduğunda çalışır.
 @receiver(post_save, sender=User)
-def profil_olustur(sender, instance, created, **kwargs):
+def profil_olustur_veya_kaydet(sender, instance, created, **kwargs):
     if created:
         Profil.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def profil_kaydet(sender, instance, **kwargs):
-    if hasattr(instance, 'profil'):
+    elif hasattr(instance, 'profil'):
         instance.profil.save()
-    else:
-        Profil.objects.create(user=instance)
-
