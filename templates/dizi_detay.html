@@ -80,9 +80,8 @@
         <p class="yaratici">{{ dizi.yonetmen|default:"Bilinmeyen Yaratıcı" }}</p>
 
         <div class="meta-grid">
-          <div class="meta-box"><p class="label">Sezon</p><p class="value">{{ dizi.sezon_sayisi|default:"1" }}</p></div>
-          <div class="meta-box"><p class="label">Bölüm</p><p class="value">{{ dizi.bolum_sayisi|default:"0" }}</p></div>
           <div class="meta-box"><p class="label">Yıl</p><p class="value">{{ dizi.basim_yili|default:"-" }}</p></div>
+          <div class="meta-box"><p class="label">Durum</p><p class="value">{{ dizi.get_liste_durumu_display }}</p></div>
           <div class="meta-box"><p class="label">Puan</p><p class="value">⭐ {{ dizi.puan|stringformat:".1f" }}</p></div>
         </div>
 

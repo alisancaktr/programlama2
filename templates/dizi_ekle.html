@@ -44,6 +44,9 @@
             <input type="hidden" name="baslik" id="id_baslik">
             <input type="hidden" name="afis_url" id="id_afis_url">
             <input type="hidden" name="puan" id="id_puan">
+            <input type="hidden" name="tur" id="id_tur">
+            <input type="hidden" name="ozet" id="id_ozet">
+            <input type="hidden" name="basim_yili" id="id_basim_yili">
 
             <div class="input-group">
                 <label>Hangi Listeye Eklensin?</label>
@@ -61,7 +64,14 @@
     <script>
         const searchInput = document.getElementById('dizi-ara');
     const resultsDiv = document.getElementById('results');
-    const API_KEY = '27f9cf9c3719c9ff4926880180a9ebef'; // Buraya filmlerdeki anahtarı yapıştır
+    const API_KEY = '1c49901a6b3d423876d5abf0c1e55037'; // Buraya filmlerdeki anahtarı yapıştır
+
+    const tvGenresMap = {
+        10759: "Aksiyon & Macera", 16: "Animasyon", 35: "Komedi", 80: "Suç",
+        99: "Belgesel", 18: "Dram", 10751: "Aile", 9648: "Gizem",
+        10762: "Çocuk", 10763: "Haber", 10764: "Realite", 10765: "Bilim Kurgu & Fantazi",
+        10766: "Pembe Dizi", 10767: "Konuşma", 10768: "Savaş & Politika", 37: "Vahşi Batı"
+    };
 
     searchInput.addEventListener('input', function() {
         const query = this.value;
@@ -92,9 +102,14 @@
                             `;
 
                             div.onclick = function() {
+                                const genreName = tv.genre_ids && tv.genre_ids.length > 0 ? (tvGenresMap[tv.genre_ids[0]] || "") : "";
+
                                 document.getElementById('id_baslik').value = title;
-                                document.getElementById('id_afis_url').value = `https://image.tmdb.org/t/p/w500${tv.poster_path}`;
-                                document.getElementById('id_puan').value = tv.vote_average;
+                                document.getElementById('id_afis_url').value = tv.poster_path ? `https://image.tmdb.org/t/p/w500${tv.poster_path}` : '';
+                                document.getElementById('id_puan').value = tv.vote_average || 0;
+                                document.getElementById('id_tur').value = genreName;
+                                document.getElementById('id_ozet').value = tv.overview || '';
+                                document.getElementById('id_basim_yili').value = year !== 'N/A' ? year : '';
                                 searchInput.value = title;
                                 resultsDiv.style.display = 'none';
                             };

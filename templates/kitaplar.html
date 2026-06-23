@@ -1,99 +1,9 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Folio — Kitaplar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+{% extends 'base.html' %}
 
-    :root {
-      --bg:       #0a0a0a;
-      --surface:  #141414;
-      --surface2: #1a1a1a;
-      --border:   rgba(255,255,255,0.07);
-      --accent:   #e8c97e;
-      --accent2:  #b87f4b;
-      --text:     #f0ece4;
-      --muted:    rgba(240,236,228,0.45);
-      --muted2:   rgba(240,236,228,0.22);
-      --film:     #7eb5e8;
-      --series:   #a87ee8;
-      --book:     #7ee8b0;
-      --r:        10px;
-    }
+{% block title %}Folio — Kitaplar{% endblock %}
 
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg); color: var(--text);
-      font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-      opacity: 0.025;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 128px;
-    }
-
-    /* ═══════ NAVBAR ═══════ */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; gap: 2rem;
-      padding: 0 2.5rem; height: 58px;
-      background: rgba(10,10,10,0.88); backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.45rem; font-weight: 900;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; text-decoration: none; white-space: nowrap;
-    }
-    .nav-links { display: flex; gap: 0.2rem; list-style: none; }
-    .nav-links a {
-      font-size: 0.8rem; font-weight: 500;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      padding: 0.45rem 0.85rem; border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
-    }
-    .nav-links a:hover, .nav-links a.active { color: var(--text); background: rgba(255,255,255,0.06); }
-    .nav-search {
-      flex: 1; display: flex; align-items: center; gap: 0.6rem;
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.45rem 0.9rem;
-      max-width: 320px; margin-left: auto; transition: border-color 0.2s;
-    }
-    .nav-search:focus-within { border-color: rgba(126,232,176,0.4); }
-    .nav-search svg { color: var(--muted2); flex-shrink: 0; }
-    .nav-search input {
-      background: none; border: none; outline: none;
-      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: var(--text); width: 100%;
-    }
-    .nav-search input::placeholder { color: var(--muted2); }
-    .nav-right { display: flex; align-items: center; gap: 0.8rem; margin-left: 1rem; }
-    .nav-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 600; color: #0a0a0a;
-      cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s;
-    }
-    .nav-avatar:hover { border-color: var(--accent); }
-    .nav-username { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
-    .logout-link {
-      font-size: 0.75rem; font-weight: 500; color: var(--muted2);
-      text-decoration: none; padding: 0.35rem 0.75rem;
-      border: 1px solid var(--border); border-radius: 6px;
-      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
-    }
-    .logout-link:hover { color: #d97070; border-color: rgba(217,112,112,0.35); }
-
-    /* ═══════ PAGE HEADER ═══════ */
+{% block extra_css %}
+    /* Page Header */
     .page-header {
       position: relative; padding: 3.5rem 2.5rem 2.5rem;
       border-bottom: 1px solid var(--border); overflow: hidden;
@@ -129,51 +39,17 @@
     .btn-gold { background: var(--accent); color: #0a0a0a; }
     .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
 
-    /* ═══════ CONTAINER ═══════ */
     .container { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
 
-    /* ═══════ FILTER BAR ═══════ */
-    .filter-bar {
-      display: flex; align-items: center; gap: 0.6rem;
-      padding: 1.5rem 0 0; flex-wrap: wrap;
-    }
-    .filter-label {
-      font-size: 0.68rem; font-weight: 600;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--muted2); margin-right: 0.4rem;
-    }
-    .filter-btn {
-      font-size: 0.75rem; font-weight: 500;
-      padding: 0.4rem 0.9rem; border-radius: 99px;
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap;
-    }
-    .filter-btn:hover { background: rgba(126,232,176,0.1); color: var(--book); border-color: rgba(126,232,176,0.3); }
-    .filter-btn.active { background: rgba(126,232,176,0.15); color: var(--book); border-color: rgba(126,232,176,0.4); }
-    .filter-sep { width: 1px; height: 20px; background: var(--border); margin: 0 0.2rem; }
-    .sort-select {
-      margin-left: auto;
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      color: var(--muted); font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem; font-weight: 500;
-      padding: 0.4rem 0.9rem; border-radius: 8px; cursor: pointer; outline: none;
-    }
-    .sort-select:focus { border-color: rgba(126,232,176,0.4); }
 
-    /* ═══════ SECTION HEAD ═══════ */
+
     .section-head {
       display: flex; align-items: center; justify-content: space-between;
       margin: 2rem 0 1.2rem;
     }
     .section-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; }
-    .see-all {
-      font-size: 0.75rem; font-weight: 500; color: var(--accent);
-      text-decoration: none; letter-spacing: 0.06em; transition: opacity 0.2s;
-    }
-    .see-all:hover { opacity: 0.7; }
 
-    /* ═══════ KİTAP GRID ═══════ */
-    /* Kitaplar için dikey oran farklı — daha uzun */
+    /* Kitap Grid */
     .kitap-grid {
       display: grid; grid-template-columns: repeat(6, 1fr);
       gap: 0.9rem; margin-bottom: 3rem;
@@ -186,18 +62,6 @@
       border: 1px solid var(--border);
     }
     .kitap-card:hover { transform: translateY(-5px) scale(1.02); border-color: rgba(126,232,176,0.25); }
-    .kitap-card:nth-child(1)  { animation-delay: 0.05s; }
-    .kitap-card:nth-child(2)  { animation-delay: 0.09s; }
-    .kitap-card:nth-child(3)  { animation-delay: 0.13s; }
-    .kitap-card:nth-child(4)  { animation-delay: 0.17s; }
-    .kitap-card:nth-child(5)  { animation-delay: 0.21s; }
-    .kitap-card:nth-child(6)  { animation-delay: 0.25s; }
-    .kitap-card:nth-child(7)  { animation-delay: 0.29s; }
-    .kitap-card:nth-child(8)  { animation-delay: 0.33s; }
-    .kitap-card:nth-child(9)  { animation-delay: 0.37s; }
-    .kitap-card:nth-child(10) { animation-delay: 0.41s; }
-    .kitap-card:nth-child(11) { animation-delay: 0.45s; }
-    .kitap-card:nth-child(12) { animation-delay: 0.49s; }
 
     .kitap-poster-ph {
       width: 100%; height: 100%;
@@ -218,79 +82,64 @@
       display: flex; flex-direction: column; justify-content: flex-end; padding: 0.65rem;
     }
     .kitap-card:hover .kitap-overlay { opacity: 1; }
-    .kitap-overlay-title { font-size: 0.72rem; font-weight: 600; line-height: 1.3; }
+    .kitap-overlay-title { font-size: 0.72rem; font-weight: 600; line-height: 1.3; color: #fff; }
     .kitap-overlay-meta  { font-size: 0.6rem; color: var(--muted); margin-top: 0.15rem; }
     .kitap-rating {
       position: absolute; top: 0.45rem; right: 0.45rem;
-      background: rgba(10,10,10,0.8); backdrop-filter: blur(6px);
-      font-size: 0.65rem; font-weight: 600; color: var(--accent);
+      background: rgba(10,10,10,0.85); backdrop-filter: blur(6px);
+      font-size: 0.65rem; font-weight: 600; color: #f1c40f;
       padding: 0.18rem 0.4rem; border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+      z-index: 2;
     }
-    /* Sayfa sayısı rozeti */
-    .kitap-pages {
-      position: absolute; bottom: 0.45rem; left: 0.45rem;
-      background: rgba(126,232,176,0.2); backdrop-filter: blur(6px);
-      border: 1px solid rgba(126,232,176,0.35);
-      font-size: 0.58rem; font-weight: 600; color: var(--book);
-      padding: 0.15rem 0.45rem; border-radius: 4px;
-      opacity: 0; transition: opacity 0.22s;
-    }
-    .kitap-card:hover .kitap-pages { opacity: 1; }
-    .kitap-watchlist-btn {
-      position: absolute; top: 0.45rem; left: 0.45rem;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: rgba(10,10,10,0.75); backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.12);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s;
-      font-size: 0.75rem;
-    }
-    .kitap-card:hover .kitap-watchlist-btn { opacity: 1; }
-    .kitap-watchlist-btn:hover { background: rgba(232,201,126,0.25); border-color: var(--accent); }
 
-    /* ═══════ ANIMATIONS ═══════ */
+    /* Modal Arayüzü */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn 0.25s ease;
+    }
+    .modal-card {
+      background: #141414; padding: 40px; border-radius: 15px;
+      border: 1px solid #222; width: 450px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      position: relative;
+      animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-close {
+      position: absolute; top: 15px; right: 20px;
+      font-size: 1.5rem; color: #888; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: #fff; }
+
+    /* Live Search Results inside Modal */
+    .result-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 10px; font-size: 13px; text-align: left; }
+    .result-item:hover { background: #333; }
+    .result-item img { width: 35px; border-radius: 4px; object-fit: cover; }
+    .result-item div { display: flex; flex-direction: column; }
+    .result-item strong { color: white; }
+    .result-item small { color: #aaa; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleUp { from { transform: scale(0.9) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ═══════ RESPONSIVE ═══════ */
     @media (max-width: 1100px) { .kitap-grid { grid-template-columns: repeat(5, 1fr); } }
     @media (max-width: 900px)  { .kitap-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 600px) {
-      nav { padding: 0 1rem; }
-      .nav-links { display: none; }
-      .container { padding: 0 1rem; }
       .page-header { padding: 2rem 1rem 1.5rem; }
       .kitap-grid { grid-template-columns: repeat(3, 1fr); }
     }
-  </style>
-</head>
-<body>
+{% endblock %}
 
-<!-- ══ NAVBAR ══ -->
-<nav>
-  <a href="/" class="nav-logo">Folio</a>
-  <ul class="nav-links">
-    <li><a href="{% url 'dashboard' %}">Keşfet</a></li>
-    <li><a href="{% url 'filmler' %}">Filmler</a></li>
-    <li><a href="{% url 'diziler' %}">Diziler</a></li>
-    <li><a href="{% url 'kitaplar' %}" class="active">Kitaplar</a></li>
-    <li><a href="{% url 'kullanici_ara' %}">👥 Arkadaşlar</a></li>
-  </ul>
-  <div class="nav-search">
-    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-    <input type="text" placeholder="Kitap veya yazar ara…"/>
-  </div>
-  <div class="nav-right">
-    <span class="nav-username">{{ user.username }}</span>
-    <div class="nav-avatar">{{ user.username|slice:":2"|upper }}</div>
-    <a href="{% url 'logout' %}" class="logout-link">Çıkış</a>
-  </div>
-</nav>
-
+{% block content %}
 <!-- ══ PAGE HEADER ══ -->
 <div class="page-header">
   <div class="page-header-bg"></div>
@@ -301,57 +150,55 @@
       <p class="page-header-sub">Kitapları keşfet, okuduklarını kaydet, okuma listenizi yönet.</p>
     </div>
     <div style="display:flex;gap:0.7rem;flex-shrink:0">
-      <a href="#" class="btn btn-ghost">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
-        Listem
-      </a>
-      <a href="{% url 'kitap_ekle' %}" class="btn btn-gold">
+      <button onclick="openAddModal()" class="btn" style="background: linear-gradient(135deg, #7ee8b0, #38bd7b); color: #0a0a0a; font-weight: bold; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 12px rgba(126,232,176,0.2);">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         Kitap Ekle
-      </a>
+      </button>
     </div>
   </div>
 </div>
 
 <div class="container">
 
-  <div class="section-head">
+
+
+  <div class="section-head" style="margin-top: 40px;">
     <div class="section-title">⏳ Okumak İstediklerim</div>
   </div>
-  <div class="kitap-grid">
-  {% for kitap in okumak_istediklerim %}
-  <a href="{% url 'kitap_detay' kitap.id %}" style="text-decoration: none; color: inherit;">
-    <div class="kitap-card">
-      <div class="kitap-poster-ph">
-        <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+
+  <div class="kitap-grid" id="okumak_istediklerim_grid">
+    {% for kitap in okumak_istediklerim %}
+    <a href="{% url 'kitap_detay' kitap.id %}" class="kitap-card-link" style="text-decoration: none; color: inherit;">
+      <div class="kitap-card" data-year="{{ kitap.basim_yili|default:'' }}" data-rating="{{ kitap.puan }}">
+        <div class="kitap-poster-ph">
+          <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        </div>
+        <div class="kitap-rating">⭐ {{ kitap.puan|stringformat:".1f" }}</div>
+        <div class="kitap-overlay">
+          <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
+          <div class="kitap-overlay-meta">Detayları Gör</div>
+        </div>
       </div>
-      
-      <div class="kitap-rating">{{ kitap.puan|stringformat:".1f" }}</div>
-      
-      <div class="kitap-overlay">
-        <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
-        <div class="kitap-overlay-meta">Detayları Gör</div>
-      </div>
-    </div>
-  </a>
+    </a>
     {% empty %}
-    <p style="color: #666; padding: 20px;">Bu listede henüz kitap yok.</p>
+    <p style="color: #666; padding: 20px;">Bu listede henüz kitap yok. <span style="color: var(--accent); cursor: pointer;" onclick="openAddModal()">Kitap ekle</span></p>
     {% endfor %}
   </div>
 
   <div style="margin-top: 40px;"></div>
 
- <div class="section-head">
+  <div class="section-head">
     <div class="section-title">✅ Okuduklarım</div>
   </div>
-  <div class="kitap-grid">
+
+  <div class="kitap-grid" id="okuduklarim_grid">
     {% for kitap in okuduklarim %}
-    <a href="{% url 'kitap_detay' kitap.id %}" style="text-decoration: none; color: inherit;">
-      <div class="kitap-card">
+    <a href="{% url 'kitap_detay' kitap.id %}" class="kitap-card-link" style="text-decoration: none; color: inherit;">
+      <div class="kitap-card" data-year="{{ kitap.basim_yili|default:'' }}" data-rating="{{ kitap.puan }}">
         <div class="kitap-poster-ph">
           <img src="{{ kitap.afis_url }}" alt="{{ kitap.baslik }}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
         </div>
-        <div class="kitap-rating">{{ kitap.puan }}</div>
+        <div class="kitap-rating">⭐ {{ kitap.puan|stringformat:".1f" }}</div>
         <div class="kitap-overlay">
           <div class="kitap-overlay-title">{{ kitap.baslik }}</div>
           <div class="kitap-overlay-meta">Detayları Gör</div> 
@@ -359,67 +206,145 @@
       </div>
     </a>
     {% empty %}
-    <p style="color: #666; padding: 20px;">Henüz bitirdiğiniz bir kitap yok.</p>
+    <p style="color: #666; padding: 20px;">Henüz bitirdiğiniz bir kitap yok. <span style="color: var(--accent); cursor: pointer;" onclick="openAddModal()">Kitap ekle</span></p>
     {% endfor %}
   </div>
 
 </div>
 
-<script>
-  const cards = document.querySelectorAll('#kitapGrid .kitap-card');
-  let activeGenre = '';
-  let activeYear  = '';
+<!-- Kitap Ekle Modal Arayüzü -->
+<div id="kitapAddModal" class="modal-backdrop" style="display: none;">
+  <div class="modal-card">
+    <span class="modal-close" onclick="closeAddModal()">&times;</span>
+    <h1 style="color: var(--book); font-size: 24px; margin-bottom: 10px; text-align: center; font-family: 'Playfair Display', serif;">📖 Kitap Ekle</h1>
+    <p style="color: #888; font-size: 14px; margin-bottom: 25px; text-align: center;">Kütüphanede ara ve listeni seç.</p>
+    
+    <div class="search-container" style="position: relative; margin-bottom: 20px;">
+        <input type="text" id="kitap-ara" placeholder="Kitap adını yazmaya başlayın..." autocomplete="off" style="width: 100%; padding: 15px; background: #1f1f1f; border: 2px solid #333; border-radius: 10px; color: white; font-size: 16px; box-sizing: border-box; transition: 0.3s;">
+        <div id="results" style="position: absolute; top: 100%; left: 0; right: 0; background: #1a1a1a; border-radius: 0 0 10px 10px; border: 1px solid #333; z-index: 1100; display: none; max-height: 200px; overflow-y: auto;"></div>
+    </div>
 
-  function applyFilters() {
-    cards.forEach(card => {
-      const genreMatch = !activeGenre || card.dataset.genre === activeGenre;
-      const yearMatch  = !activeYear  || card.dataset.year  === activeYear;
-      card.style.display = (genreMatch && yearMatch) ? '' : 'none';
-    });
+    <form method="POST" action="{% url 'kitap_ekle' %}">
+        {% csrf_token %}
+        
+        <input type="hidden" name="baslik" id="id_baslik">
+        <input type="hidden" name="afis_url" id="id_afis_url">
+        <input type="hidden" name="puan" id="id_puan">
+        <input type="hidden" name="yazar" id="id_yazar">
+        <input type="hidden" name="sayfa_sayisi" id="id_sayfa_sayisi">
+        <input type="hidden" name="basim_yili" id="id_basim_yili">
+        <input type="hidden" name="ozet" id="id_ozet">
+
+        <div class="input-group" style="margin-bottom: 20px; text-align: left;">
+            <label style="display: block; margin-bottom: 8px; color: var(--book); font-size: 13px; font-weight: bold;">Hangi Listeye Eklensin?</label>
+            <select name="liste_durumu" style="width: 100%; padding: 12px; background: #1f1f1f; border: 1px solid #333; border-radius: 8px; color: white; cursor: pointer;">
+                <option value="okumak_istediklerim">⏳ Okumak İstediklerim</option>
+                <option value="okuduklarim">✅ Okuduklarım</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-save" style="background: var(--book); color: #000; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px;">🚀 Kitaplığıma Ekle</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const cards = document.querySelectorAll('.kitap-card');
+  let activeYear  = 'tümü';
+  let searchWord = '';
+
+  // Modal Kontrolleri
+  function openAddModal() {
+    document.getElementById('kitapAddModal').style.display = 'flex';
+    document.getElementById('kitap-ara').focus();
+  }
+  function closeAddModal() {
+    document.getElementById('kitapAddModal').style.display = 'none';
+    document.getElementById('kitap-ara').value = '';
+    document.getElementById('results').style.display = 'none';
+    if (window.location.pathname.includes('kitap-ekle')) {
+      window.location.href = "{% url 'kitaplar' %}";
+    }
   }
 
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const type  = btn.dataset.filterType;
-      const value = btn.dataset.value;
+  // Dışarı tıklayınca kapatma
+  window.addEventListener('click', function(e) {
+    const modal = document.getElementById('kitapAddModal');
+    if (e.target === modal) {
+      closeAddModal();
+    }
+  });
 
-      if (type === 'genre') {
-        document.querySelectorAll('.filter-btn[data-filter-type="genre"]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeGenre = value;
-      } else if (type === 'year') {
-        if (btn.classList.contains('active')) {
-          btn.classList.remove('active');
-          activeYear = '';
-        } else {
-          document.querySelectorAll('.filter-btn[data-filter-type="year"]').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeYear = value;
-        }
+  // Open Library Kitap Arama Entegrasyonu
+  const searchInput = document.getElementById('kitap-ara');
+  const resultsDiv = document.getElementById('results');
+  let timeout = null;
+
+  searchInput.addEventListener('input', function() {
+      const query = this.value.trim();
+      clearTimeout(timeout);
+
+      if (query.length > 2) {
+          timeout = setTimeout(() => {
+              fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`)
+                  .then(response => response.json())
+                  .then(data => {
+                      resultsDiv.innerHTML = '';
+                      
+                      if (data.docs && data.docs.length > 0) {
+                          resultsDiv.style.display = 'block';
+                          
+                          data.docs.forEach(book => {
+                              const title = book.title || "İsimsiz Kitap";
+                              const authors = book.author_name ? book.author_name.join(', ') : 'Bilinmeyen Yazar';
+                              const cover = book.cover_i 
+                                  ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg` 
+                                  : 'https://via.placeholder.com/128x192?text=Kapak+Yok';
+
+                              const div = document.createElement('div');
+                              div.className = 'result-item';
+                              div.innerHTML = `
+                                  <img src="${cover}" style="width:35px; border-radius:4px;">
+                                  <div style="display:flex; flex-direction:column;">
+                                      <strong>${title}</strong>
+                                      <small>${authors}</small>
+                                  </div>
+                              `;
+                              
+                              div.onclick = function() {
+                                  document.getElementById('id_baslik').value = title;
+                                  document.getElementById('id_afis_url').value = cover;
+                                  document.getElementById('id_yazar').value = authors;
+                                  document.getElementById('id_puan').value = book.ratings_average ? (book.ratings_average * 2).toFixed(1) : 0;
+                                  document.getElementById('id_sayfa_sayisi').value = book.number_of_pages_median || 0;
+                                  document.getElementById('id_basim_yili').value = book.first_publish_year || '';
+                                  document.getElementById('id_ozet').value = book.first_sentence ? book.first_sentence[0] : title + " adlı eser.";
+
+                                  searchInput.value = title;
+                                  resultsDiv.style.display = 'none';
+                              };
+                              resultsDiv.appendChild(div);
+                          });
+                      } else {
+                          resultsDiv.style.display = 'none';
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Sistem Hatası:', error);
+                  });
+          }, 500);
+      } else {
+          resultsDiv.style.display = 'none';
       }
-
-      applyFilters();
-    });
   });
 
-  document.getElementById('sortSelect').addEventListener('change', function () {
-    const grid = document.getElementById('kitapGrid');
-    const visible = [...cards].filter(c => c.style.display !== 'none');
-
-    visible.sort((a, b) => {
-      const rA = parseFloat(a.querySelector('.kitap-rating').textContent);
-      const rB = parseFloat(b.querySelector('.kitap-rating').textContent);
-      const yA = a.dataset.year === 'klasik' ? 0 : parseInt(a.dataset.year);
-      const yB = b.dataset.year === 'klasik' ? 0 : parseInt(b.dataset.year);
-      if (this.value === 'rating')  return rB - rA;
-      if (this.value === 'newest')  return yB - yA;
-      if (this.value === 'oldest')  return yA - yB;
-      return 0;
-    });
-
-    visible.forEach(c => grid.appendChild(c));
+  // URL'de kitap-ekle varsa modalı otomatik aç
+  {% if open_modal %}
+  window.addEventListener('DOMContentLoaded', () => {
+    openAddModal();
   });
+  {% endif %}
 </script>
-
-</body>
-</html>
+{% endblock %}

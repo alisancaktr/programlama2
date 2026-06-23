@@ -24,22 +24,39 @@ def diziler_view(request):
 @login_required(login_url='login')
 def dizi_ekle_view(request):
     if request.method == "POST":
-        # Formdan gelen 'liste_durumu' verisini çekiyoruz
-        liste_durumu = request.POST.get('liste_durumu') 
-        
-        # Diziyi oluştururken bu durumu açıkça belirtmeliyiz
-        Dizi.objects.create(
-            user=request.user,
-            baslik=request.POST.get('baslik'),
-            yonetmen=request.POST.get('yonetmen'),
-            tur=request.POST.get('tur'),
-            puan=request.POST.get('puan'),
-            afis_url=request.POST.get('afis_url'),
-            # KRİTİK NOKTA: Buraya dikkat!
-            liste_durumu=liste_durumu 
-        )
-        return redirect('diziler')
-    return render(request, 'dizi_ekle.html')
+        baslik = request.POST.get('baslik', '').strip()
+        liste_durumu = request.POST.get('liste_durumu')
+        tur = request.POST.get('tur', '').strip()
+        ozet = request.POST.get('ozet', '').strip()
+        basim_yili = request.POST.get('basim_yili', '').strip()
+
+        if baslik:
+            try:
+                puan_val = float(request.POST.get('puan', 0) or 0)
+            except (ValueError, TypeError):
+                puan_val = 0.0
+
+            Dizi.objects.create(
+                user=request.user,
+                baslik=baslik,
+                yonetmen=request.POST.get('yonetmen', ''),
+                tur=tur,
+                puan=puan_val,
+                afis_url=request.POST.get('afis_url', ''),
+                liste_durumu=liste_durumu,
+                ozet=ozet,
+                basim_yili=basim_yili
+            )
+            return redirect('diziler')
+    izlediklerim = Dizi.objects.filter(user=request.user, liste_durumu='izlediklerim')
+    izlemek_istediklerim = Dizi.objects.filter(user=request.user, liste_durumu='izlemek_istediklerim')
+    
+    context = {
+        'izlediklerim': izlediklerim,
+        'izlemek_istediklerim': izlemek_istediklerim,
+        'open_modal': True
+    }
+    return render(request, 'diziler.html', context)
 
 @login_required(login_url='login')
 def dizi_detay_view(request, dizi_id):

@@ -1,110 +1,9 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Folio — Filmler</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+{% extends 'base.html' %}
 
-    :root {
-      --bg:       #0a0a0a;
-      --surface:  #141414;
-      --surface2: #1a1a1a;
-      --border:   rgba(255,255,255,0.07);
-      --accent:   #e8c97e;
-      --accent2:  #b87f4b;
-      --text:     #f0ece4;
-      --muted:    rgba(240,236,228,0.45);
-      --muted2:   rgba(240,236,228,0.22);
-      --film:     #7eb5e8;
-      --series:   #a87ee8;
-      --book:     #7ee8b0;
-      --r:        10px;
-    }
+{% block title %}Folio — Filmler{% endblock %}
 
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
-      opacity: 0.025;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 128px;
-    }
-
-    /* ═══════ NAVBAR ═══════ */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; gap: 2rem;
-      padding: 0 2.5rem;
-      height: 58px;
-      background: rgba(10,10,10,0.88);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.45rem; font-weight: 900;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-decoration: none; white-space: nowrap;
-    }
-    .nav-links { display: flex; gap: 0.2rem; list-style: none; }
-    .nav-links a {
-      font-size: 0.8rem; font-weight: 500;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      padding: 0.45rem 0.85rem; border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
-    }
-    .nav-links a:hover, .nav-links a.active {
-      color: var(--text); background: rgba(255,255,255,0.06);
-    }
-    .nav-search {
-      flex: 1; display: flex; align-items: center; gap: 0.6rem;
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-      border-radius: 8px; padding: 0.45rem 0.9rem;
-      max-width: 320px; margin-left: auto;
-      transition: border-color 0.2s;
-    }
-    .nav-search:focus-within { border-color: rgba(232,201,126,0.4); }
-    .nav-search svg { color: var(--muted2); flex-shrink: 0; }
-    .nav-search input {
-      background: none; border: none; outline: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem; color: var(--text); width: 100%;
-    }
-    .nav-search input::placeholder { color: var(--muted2); }
-    .nav-right { display: flex; align-items: center; gap: 0.8rem; margin-left: 1rem; }
-    .nav-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent2), var(--accent));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 600; color: #0a0a0a;
-      cursor: pointer; border: 2px solid transparent;
-      transition: border-color 0.2s;
-    }
-    .nav-avatar:hover { border-color: var(--accent); }
-    .nav-username { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
-    .logout-link {
-      font-size: 0.75rem; font-weight: 500; color: var(--muted2);
-      text-decoration: none; padding: 0.35rem 0.75rem;
-      border: 1px solid var(--border); border-radius: 6px;
-      transition: color 0.2s, border-color 0.2s; white-space: nowrap;
-    }
-    .logout-link:hover { color: #d97070; border-color: rgba(217,112,112,0.35); }
-
-    /* ═══════ PAGE HEADER ═══════ */
+{% block extra_css %}
+    /* Page Header */
     .page-header {
       position: relative; padding: 3.5rem 2.5rem 2.5rem;
       border-bottom: 1px solid var(--border); overflow: hidden;
@@ -145,45 +44,10 @@
     .btn-gold { background: var(--accent); color: #0a0a0a; }
     .btn-ghost { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
 
-    /* ═══════ CONTAINER ═══════ */
     .container { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
 
-    /* ═══════ FILTER BAR ═══════ */
-    .filter-bar {
-      display: flex; align-items: center; gap: 0.6rem;
-      padding: 1.5rem 0 0;
-      flex-wrap: wrap;
-    }
-    .filter-label {
-      font-size: 0.68rem; font-weight: 600;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--muted2); margin-right: 0.4rem;
-    }
-    .filter-btn {
-      font-size: 0.75rem; font-weight: 500;
-      padding: 0.4rem 0.9rem; border-radius: 99px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--muted); cursor: pointer;
-      transition: all 0.2s; white-space: nowrap;
-    }
-    .filter-btn:hover { background: rgba(126,181,232,0.1); color: var(--film); border-color: rgba(126,181,232,0.3); }
-    .filter-btn.active { background: rgba(126,181,232,0.15); color: var(--film); border-color: rgba(126,181,232,0.4); }
-    .filter-sep { width: 1px; height: 20px; background: var(--border); margin: 0 0.2rem; }
-    .sort-select {
-      margin-left: auto;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem; font-weight: 500;
-      padding: 0.4rem 0.9rem;
-      border-radius: 8px; cursor: pointer;
-      outline: none;
-    }
-    .sort-select:focus { border-color: rgba(126,181,232,0.4); }
 
-    /* ═══════ SECTION HEAD ═══════ */
+
     .section-head {
       display: flex; align-items: center; justify-content: space-between;
       margin: 2rem 0 1.2rem;
@@ -198,16 +62,8 @@
       letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--muted); margin-left: 0.7rem;
     }
-    .see-all {
-      font-size: 0.75rem; font-weight: 500;
-      color: var(--accent); text-decoration: none;
-      letter-spacing: 0.06em; transition: opacity 0.2s;
-    }
-    .see-all:hover { opacity: 0.7; }
 
-
-
-    /* ═══════ FILM GRID ═══════ */
+    /* Film Grid */
     .film-grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -224,24 +80,7 @@
       border: 1px solid var(--border);
     }
     .film-card:hover { transform: translateY(-5px) scale(1.02); border-color: rgba(126,181,232,0.25); }
-    .film-card:nth-child(1)  { animation-delay: 0.05s; }
-    .film-card:nth-child(2)  { animation-delay: 0.09s; }
-    .film-card:nth-child(3)  { animation-delay: 0.13s; }
-    .film-card:nth-child(4)  { animation-delay: 0.17s; }
-    .film-card:nth-child(5)  { animation-delay: 0.21s; }
-    .film-card:nth-child(6)  { animation-delay: 0.25s; }
-    .film-card:nth-child(7)  { animation-delay: 0.29s; }
-    .film-card:nth-child(8)  { animation-delay: 0.33s; }
-    .film-card:nth-child(9)  { animation-delay: 0.37s; }
-    .film-card:nth-child(10) { animation-delay: 0.41s; }
-    .film-card:nth-child(11) { animation-delay: 0.45s; }
-    .film-card:nth-child(12) { animation-delay: 0.49s; }
 
-    .film-poster-ph {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.8rem;
-    }
     .film-overlay {
       position: absolute; inset: 0;
       background: linear-gradient(0deg, rgba(10,10,10,0.95) 0%, transparent 55%);
@@ -250,79 +89,64 @@
       padding: 0.65rem;
     }
     .film-card:hover .film-overlay { opacity: 1; }
-    .film-overlay-title { font-size: 0.72rem; font-weight: 600; line-height: 1.3; }
+    .film-overlay-title { font-size: 0.72rem; font-weight: 600; line-height: 1.3; color: #fff; }
     .film-overlay-meta  { font-size: 0.6rem; color: var(--muted); margin-top: 0.15rem; }
     .film-rating {
       position: absolute; top: 0.45rem; right: 0.45rem;
-      background: rgba(10,10,10,0.8);
+      background: rgba(10,10,10,0.85);
       backdrop-filter: blur(6px);
-      font-size: 0.65rem; font-weight: 600; color: var(--accent);
+      font-size: 0.65rem; font-weight: 600; color: #f1c40f;
       padding: 0.18rem 0.4rem; border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.1);
+      z-index: 2;
     }
-    .film-watchlist-btn {
-      position: absolute; top: 0.45rem; left: 0.45rem;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: rgba(10,10,10,0.75); backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.12);
+
+    /* Modal Arayüzü */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; opacity: 0; transition: opacity 0.2s, background 0.2s;
-      font-size: 0.75rem;
+      animation: fadeIn 0.25s ease;
     }
-    .film-card:hover .film-watchlist-btn { opacity: 1; }
-    .film-watchlist-btn:hover { background: rgba(232,201,126,0.25); border-color: var(--accent); }
+    .modal-card {
+      background: #141414; padding: 40px; border-radius: 15px;
+      border: 1px solid #222; width: 450px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      position: relative;
+      animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-close {
+      position: absolute; top: 15px; right: 20px;
+      font-size: 1.5rem; color: #888; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: #fff; }
 
+    /* Live Search Results inside Modal */
+    .search-item { display: flex; align-items: center; padding: 10px; cursor: pointer; border-bottom: 1px solid #222; transition: 0.2s; text-align: left; }
+    .search-item:hover { background: #222; }
+    .search-item img { width: 45px; height: 65px; border-radius: 4px; margin-right: 15px; object-fit: cover; }
+    .search-item div { font-size: 14px; color: #ddd; }
+    .search-item b { display: block; color: #fff; }
 
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleUp { from { transform: scale(0.9) translateY(10px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
-    /* ═══════ ANIMATIONS ═══════ */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ═══════ RESPONSIVE ═══════ */
     @media (max-width: 1100px) { .film-grid { grid-template-columns: repeat(5, 1fr); } }
-    @media (max-width: 900px) {
-      .featured-strip { grid-template-columns: 1fr 1fr; }
-      .featured-card:first-child { grid-column: span 2; }
-      .film-grid { grid-template-columns: repeat(4, 1fr); }
-      .top-grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 900px)  { .film-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 600px) {
-      nav { padding: 0 1rem; }
-      .nav-links { display: none; }
-      .container { padding: 0 1rem; }
       .page-header { padding: 2rem 1rem 1.5rem; }
-      .featured-strip { grid-template-columns: 1fr; }
-      .featured-card:first-child { grid-column: span 1; }
       .film-grid { grid-template-columns: repeat(3, 1fr); }
     }
-  </style>
-</head>
-<body>
+{% endblock %}
 
-<!-- ══ NAVBAR ══ -->
-<nav>
-  <a href="/" class="nav-logo">Folio</a>
-  <ul class="nav-links">
-    <li><a href="{% url 'dashboard' %}">Keşfet</a></li>
-    <li><a href="{% url 'filmler' %}" class="active">Filmler</a></li>
-    <li><a href="{% url 'diziler' %}">Diziler</a></li>
-    <li><a href="{% url 'kitaplar' %}">Kitaplar</a></li>
-    <li><a href="{% url 'kullanici_ara' %}">👥 Arkadaşlar</a></li>
-  </ul>
-  <div class="nav-search">
-    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-    <input type="text" placeholder="Film ara…"/>
-  </div>
-  <div class="nav-right">
-    <span class="nav-username">{{ user.username }}</span>
-    <div class="nav-avatar">{{ user.username|slice:":2"|upper }}</div>
-    <a href="{% url 'logout' %}" class="logout-link">Çıkış</a>
-  </div>
-</nav>
-
+{% block content %}
 <!-- ══ PAGE HEADER ══ -->
 <div class="page-header">
   <div class="page-header-bg"></div>
@@ -333,19 +157,12 @@
       <p class="page-header-sub">Filmleri keşfet, puanla ve izleme listene ekle.</p>
     </div>
     <div style="display:flex;gap:0.7rem;flex-shrink:0">
-      <a href="#" class="btn btn-ghost">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path d="M3 6h18M7 12h10M11 18h2"/>
-        </svg>
-        Listem
-      </a>
-      
-      <a href="{% url 'film_ekle' %}" class="btn btn-gold">
+      <button onclick="openAddModal()" class="btn" style="background: linear-gradient(135deg, #7eb5e8, #448ccb); color: #0a0a0a; font-weight: bold; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 4px 12px rgba(126,181,232,0.2);">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
           <path d="M12 5v14M5 12h14"/>
         </svg>
         Film Ekle
-      </a>
+      </button>
     </div>
   </div>
 </div>
@@ -353,157 +170,185 @@
 <!-- ══ MAIN ══ -->
 <div class="container">
 
-  <!-- Filter Bar -->
-  <div class="filter-bar">
-    <span class="filter-label">Tür</span>
-    <button class="filter-btn active">Tümü</button>
-    <button class="filter-btn">Dram</button>
-    <button class="filter-btn">Bilim Kurgu</button>
-    <button class="filter-btn">Gerilim</button>
-    <button class="filter-btn">Komedi</button>
-    <button class="filter-btn">Animasyon</button>
-    <button class="filter-btn">Belgesel</button>
-    <div class="filter-sep"></div>
-    <button class="filter-btn">2024</button>
-    <button class="filter-btn">2023</button>
-    <button class="filter-btn">Klasikler</button>
-    <select class="sort-select">
-      <option>Puana Göre</option>
-      <option>Yeniden Eskiye</option>
-      <option>Eskiden Yeniye</option>
-      <option>Popülerlik</option>
-    </select>
+
+
+  <!-- İzlemek İstediklerim -->
+  <div class="section-head">
+    <div class="section-title">⏳ İzlemek İstediklerim</div>
   </div>
 
-  <!-- Popüler Filmler -->
-<div class="section-head">
-    <div class="section-title">⏳ İzlemek İstediklerim</div>
-    <a href="{% url 'film_ekle' %}" class="btn">Film Ekle</a>
-</div>
-
-<div class="film-grid">
+  <div class="film-grid" id="izlemek_istediklerim_grid">
     {% for film in izlemek_istediklerim %}
-    <a href="{% url 'film_detay' film.id %}" style="text-decoration: none; color: inherit;">
-        <div class="film-card">
-            <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
-            <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
-            <div class="film-overlay">
-                <div class="film-overlay-title">{{ film.baslik }}</div>
-                <div class="film-overlay-meta">Detaylar ve Yorumlar</div>
-            </div>
+    <a href="{% url 'film_detay' film.id %}" class="film-card-link" style="text-decoration: none; color: inherit;">
+      <div class="film-card" data-genre="{{ film.tur|default:''|lower }}" data-year="{{ film.basim_yili|default:'' }}" data-rating="{{ film.puan }}">
+        <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        <div class="film-rating">⭐ {{ film.puan|floatformat:1 }}</div>
+        <div class="film-overlay">
+          <div class="film-overlay-title">{{ film.baslik }}</div>
+          <div class="film-overlay-meta">Detaylar ve Yorumlar</div>
         </div>
+      </div>
     </a>
     {% empty %}
-    <p style="color: #666; padding: 20px;">İzleme listeniz henüz boş.</p>
+    <p style="color: #666; padding: 20px;" class="empty-msg">İzleme listeniz henüz boş. <span style="color: var(--accent); cursor: pointer;" onclick="openAddModal()">Film ekle</span></p>
     {% endfor %}
-</div>
+  </div>
 
-<div style="margin: 40px 0;"></div>
+  <div style="margin: 40px 0;"></div>
 
-<div class="section-head">
+  <!-- İzlediğim Filmler -->
+  <div class="section-head">
     <div class="section-title">✅ İzlediğim Filmler</div>
-</div>
+  </div>
 
-<div class="film-grid">
+  <div class="film-grid" id="izlediklerim_grid">
     {% for film in izlediklerim %}
-    <a href="{% url 'film_detay' film.id %}" style="text-decoration: none; color: inherit;">
-        <div class="film-card">
-            <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
-            <div class="film-rating">{{ film.puan|floatformat:1 }}</div>
-            <div class="film-overlay">
-                <div class="film-overlay-title">{{ film.baslik }}</div>
-                <div class="film-overlay-meta">Detaylar ve Yorumlar</div>
-            </div>
+    <a href="{% url 'film_detay' film.id %}" class="film-card-link" style="text-decoration: none; color: inherit;">
+      <div class="film-card" data-genre="{{ film.tur|default:''|lower }}" data-year="{{ film.basim_yili|default:'' }}" data-rating="{{ film.puan }}">
+        <img src="{{ film.afis_url }}" class="film-poster-img" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        <div class="film-rating">⭐ {{ film.puan|floatformat:1 }}</div>
+        <div class="film-overlay">
+          <div class="film-overlay-title">{{ film.baslik }}</div>
+          <div class="film-overlay-meta">Detaylar ve Yorumlar</div>
         </div>
+      </div>
     </a>
     {% empty %}
-    <p style="color: #666; padding: 20px;">Henüz izlenmiş bir film yok.</p>
+    <p style="color: #666; padding: 20px;" class="empty-msg">Henüz izlenmiş bir film yok. <span style="color: var(--accent); cursor: pointer;" onclick="openAddModal()">Film ekle</span></p>
     {% endfor %}
+  </div>
+
 </div>
 
+<!-- Film Ekle Modal Arayüzü -->
+<div id="filmAddModal" class="modal-backdrop" style="display: none;">
+  <div class="modal-card">
+    <span class="modal-close" onclick="closeAddModal()">&times;</span>
+    <h1 style="color: var(--film); font-size: 24px; margin-bottom: 10px; text-align: center; font-family: 'Playfair Display', serif;">🎬 Film Ekle</h1>
+    <p style="color: #888; font-size: 14px; margin-bottom: 25px; text-align: center;">Kütüphanede ara ve listeni seç.</p>
+    
+    <div class="search-container" style="position: relative; margin-bottom: 20px;">
+        <input type="text" id="liveSearch" placeholder="Film adını yazmaya başlayın..." autocomplete="off" style="width: 100%; padding: 15px; background: #1f1f1f; border: 2px solid #333; border-radius: 10px; color: white; font-size: 16px; box-sizing: border-box; transition: 0.3s;">
+        <div id="results" style="position: absolute; top: 100%; left: 0; right: 0; background: #1a1a1a; border-radius: 0 0 10px 10px; border: 1px solid #333; z-index: 1100; display: none; max-height: 250px; overflow-y: auto;"></div>
+    </div>
+
+    <form method="POST" action="{% url 'film_ekle' %}">
+        {% csrf_token %}
+        
+        <input type="hidden" name="baslik" id="id_baslik">
+        <input type="hidden" name="afis_url" id="id_afis_url">
+        <input type="hidden" name="puan" id="id_puan">
+        <input type="hidden" name="tur" id="id_tur">
+        <input type="hidden" name="ozet" id="id_ozet">
+        <input type="hidden" name="basim_yili" id="id_basim_yili">
+
+        <div class="input-group" style="margin-bottom: 20px; text-align: left;">
+            <label style="display: block; margin-bottom: 8px; color: var(--film); font-size: 13px; font-weight: bold;">Hangi Listeye Eklensin?</label>
+            <select name="liste_durumu" id="id_liste_durumu" style="width: 100%; padding: 12px; background: #1f1f1f; border: 1px solid #333; border-radius: 8px; color: white; cursor: pointer;">
+                <option value="izlemek_istediklerim">🎥 İzlemek İstediklerim</option>
+                <option value="izlediklerim">✅ İzlediğim Filmler</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-save" style="background: var(--film); color: #000; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px;">🚀 Listeme Kaydet</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-  const cards = document.querySelectorAll('#filmGrid .film-card');
+  const cards = document.querySelectorAll('.film-card');
   let activeGenre = 'tümü';
   let activeYear = 'tümü';
+  let searchWord = '';
 
-  const genreMap = {
-    'tümü': null,
-    'dram': 'dram',
-    'bilim kurgu': 'bilim-kurgu',
-    'gerilim': 'gerilim',
-    'komedi': 'komedi',
-    'animasyon': 'animasyon',
-    'belgesel': 'belgesel',
-  };
-  const yearMap = {
-    '2024': '2024',
-    '2023': '2023',
-    'klasikler': 'klasik',
-  };
-
-  function applyFilters() {
-    cards.forEach(card => {
-      const genre = card.dataset.genre;
-      const year  = card.dataset.year;
-
-      const genreMatch = !genreMap[activeGenre] || genre === genreMap[activeGenre];
-      const yearMatch  = !yearMap[activeYear]   || year  === yearMap[activeYear];
-
-      card.style.display = (genreMatch && yearMatch) ? '' : 'none';
-    });
+  // Modal Kontrolleri
+  function openAddModal() {
+    document.getElementById('filmAddModal').style.display = 'flex';
+    document.getElementById('liveSearch').focus();
+  }
+  function closeAddModal() {
+    document.getElementById('filmAddModal').style.display = 'none';
+    document.getElementById('liveSearch').value = '';
+    document.getElementById('results').style.display = 'none';
+    if (window.location.pathname.includes('film-ekle')) {
+      window.location.href = "{% url 'filmler' %}";
+    }
   }
 
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const label = btn.textContent.trim().toLowerCase();
+  // Dışarı tıklayınca kapatma
+  window.addEventListener('click', function(e) {
+    const modal = document.getElementById('filmAddModal');
+    if (e.target === modal) {
+      closeAddModal();
+    }
+  });
 
-      if (label === 'tümü' || genreMap.hasOwnProperty(label)) {
-        // Genre butonları grubu
-        document.querySelectorAll('.filter-btn').forEach(b => {
-          const bl = b.textContent.trim().toLowerCase();
-          if (bl === 'tümü' || genreMap.hasOwnProperty(bl)) b.classList.remove('active');
-        });
-        btn.classList.add('active');
-        activeGenre = label;
-      } else if (yearMap.hasOwnProperty(label)) {
-        // Yıl butonları grubu — toggle
-        if (btn.classList.contains('active')) {
-          btn.classList.remove('active');
-          activeYear = 'tümü';
-        } else {
-          document.querySelectorAll('.filter-btn').forEach(b => {
-            if (yearMap.hasOwnProperty(b.textContent.trim().toLowerCase())) b.classList.remove('active');
-          });
-          btn.classList.add('active');
-          activeYear = label;
-        }
+  // TMDB Film Arama Entegrasyonu
+  const searchInput = document.getElementById('liveSearch');
+  const resultsDiv = document.getElementById('results');
+  const apiKey = '1c49901a6b3d423876d5abf0c1e55037';
+
+  const genresMap = {
+      28: "Aksiyon", 12: "Macera", 16: "Animasyon", 35: "Komedi", 80: "Suç",
+      99: "Belgesel", 18: "Dram", 10751: "Aile", 14: "Fantastik", 36: "Tarih",
+      27: "Korku", 10402: "Müzik", 9648: "Gizem", 10749: "Romantik",
+      878: "Bilim Kurgu", 10770: "TV Filmi", 53: "Gerilim", 10752: "Savaş", 37: "Vahşi Batı"
+  };
+
+  searchInput.addEventListener('input', async () => {
+      const query = searchInput.value;
+      if (query.length > 2) {
+          try {
+              const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}&language=tr-TR`);
+              const data = await res.json();
+              
+              resultsDiv.innerHTML = '';
+              resultsDiv.style.display = 'block';
+              
+              data.results.slice(0, 5).forEach(film => {
+                  const item = document.createElement('div');
+                  item.className = 'search-item';
+                  const posterPath = film.poster_path ? `https://image.tmdb.org/t/p/w92${film.poster_path}` : 'https://via.placeholder.com/92x138?text=Yok';
+                  
+                  item.innerHTML = `
+                      <img src="${posterPath}">
+                      <div>
+                          <b>${film.title}</b>
+                          <span>${film.release_date ? film.release_date.split('-')[0] : 'Tarih Belirsiz'}</span>
+                      </div>
+                  `;
+                  
+                  item.onclick = () => {
+                      const genreName = film.genre_ids && film.genre_ids.length > 0 ? (genresMap[film.genre_ids[0]] || "") : "";
+
+                      document.getElementById('id_baslik').value = film.title;
+                      document.getElementById('id_afis_url').value = film.poster_path ? `https://image.tmdb.org/t/p/w500${film.poster_path}` : '';
+                      document.getElementById('id_puan').value = film.vote_average || 0;
+                      document.getElementById('id_tur').value = genreName;
+                      document.getElementById('id_ozet').value = film.overview || '';
+                      document.getElementById('id_basim_yili').value = film.release_date ? film.release_date.split('-')[0] : '';
+                      
+                      searchInput.value = film.title;
+                      resultsDiv.style.display = 'none';
+                      searchInput.style.borderColor = '#2ecc71'; 
+                  };
+                  resultsDiv.appendChild(item);
+              });
+          } catch (err) {
+              console.error("Hata:", err);
+          }
+      } else {
+          resultsDiv.style.display = 'none';
       }
-
-      applyFilters();
-    });
   });
 
-  // Sıralama
-  document.querySelector('.sort-select').addEventListener('change', function () {
-    const val = this.value;
-    const grid = document.getElementById('filmGrid');
-    const visible = [...cards].filter(c => c.style.display !== 'none');
-
-    visible.sort((a, b) => {
-      const ratingA = parseFloat(a.querySelector('.film-rating').textContent);
-      const ratingB = parseFloat(b.querySelector('.film-rating').textContent);
-      const yearA   = parseInt(a.dataset.year);
-      const yearB   = parseInt(b.dataset.year);
-
-      if (val === 'Puana Göre')       return ratingB - ratingA;
-      if (val === 'Yeniden Eskiye')   return yearB - yearA;
-      if (val === 'Eskiden Yeniye')   return yearA - yearB;
-      return 0;
-    });
-
-    visible.forEach(c => grid.appendChild(c));
+  // URL'de film-ekle varsa modalı otomatik aç
+  {% if open_modal %}
+  window.addEventListener('DOMContentLoaded', () => {
+    openAddModal();
   });
+  {% endif %}
 </script>
-
-</body>
-</html>
+{% endblock %}
