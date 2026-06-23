@@ -8,4 +8,5 @@ urlpatterns = [
     path('istek-reddet/<int:istek_id>/', views.istek_reddet_view, name='istek_reddet'),
     path('istekler/', views.arkadas_istekleri_view, name='arkadas_istekleri'),
     path('profil/<int:kullanici_id>/', views.profil_view, name='kullanici_profil'),
+    path('profil-duzenle/', views.profil_duzenle_view, name='profil_duzenle'),
 ]

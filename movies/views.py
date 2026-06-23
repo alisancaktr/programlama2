@@ -22,6 +22,9 @@ def film_ekle_view(request):
         afis_url = request.POST.get('afis_url', '').strip()
         puan = request.POST.get('puan', '0')
         liste_durumu = request.POST.get('liste_durumu', 'izlemek_istediklerim')
+        tur = request.POST.get('tur', '').strip()
+        ozet = request.POST.get('ozet', '').strip()
+        basim_yili = request.POST.get('basim_yili', '').strip()
 
         # Terminale ne geldiğini net görelim
         print(f"\n--- YENİ KAYIT DENEMESİ ---")
@@ -42,7 +45,10 @@ def film_ekle_view(request):
                     baslik=baslik,
                     afis_url=afis_url,
                     puan=puan_val,
-                    liste_durumu=liste_durumu
+                    liste_durumu=liste_durumu,
+                    tur=tur,
+                    ozet=ozet,
+                    basim_yili=basim_yili
                 )
                 print(f"✅ KAYIT BAŞARILI: {baslik}")
                 return redirect('filmler') # Yönlendirme yapmalı (302 kodu)
@@ -53,7 +59,15 @@ def film_ekle_view(request):
         else:
             print("⚠️ HATA: Başlık boş olduğu için 'if baslik' içine girilemedi!")
 
-    return render(request, 'film_ekle.html')
+    izlediklerim = Film.objects.filter(user=request.user, liste_durumu='izlediklerim').order_by('-eklenme_tarihi')
+    izlemek_istediklerim = Film.objects.filter(user=request.user, liste_durumu='izlemek_istediklerim').order_by('-eklenme_tarihi')
+    
+    context = {
+        'izlediklerim': izlediklerim,
+        'izlemek_istediklerim': izlemek_istediklerim,
+        'open_modal': True,
+    }
+    return render(request, 'filmler.html', context)
 
 
 @login_required(login_url='login')

@@ -84,7 +84,6 @@
         <p class="yazar">{{ kitap.yazar|default:"Bilinmeyen Yazar" }}</p>
 
         <div class="meta-grid">
-          <div class="meta-box"><p class="label">Sayfa</p><p class="value">{{ kitap.sayfa_sayisi|default:"-" }}</p></div>
           <div class="meta-box"><p class="label">Basım Yılı</p><p class="value">{{ kitap.basim_yili|default:"-" }}</p></div>
           <div class="meta-box"><p class="label">Liste</p><p class="value">{{ kitap.get_liste_durumu_display }}</p></div>
           <div class="meta-box"><p class="label">Puan</p><p class="value">⭐ {{ kitap.puan|stringformat:".1f" }}</p></div>
@@ -95,18 +94,16 @@
           {{ kitap.ozet|default:"Bu kitap için henüz özet bilgisi girilmemiş." }}
         </div>
 
-        <div class="kitap-info">
-            <h2>{{ kitap.baslik }}</h2>
-            <p>{{ kitap.ozet }}</p>
-            <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
-                <form action="{% url 'kitap_sil' kitap.id %}" method="POST" onsubmit="return confirm('Bu kitabı kütüphanenden silmek istediğine emin misin?');">
-                    {% csrf_token %}
-                    <button type="submit" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        🗑️ Kitabı Sil
+        <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
+            <form action="{% url 'kitap_sil' kitap.id %}" method="POST" onsubmit="return confirm('Bu kitabı kütüphanenden silmek istediğine emin misin?');">
+                {% csrf_token %}
+                <button type="submit" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                    🗑️ Kitabı Sil
                 </button>
             </form>
         </div>
-    </div> 
+      </div> 
+    </div>
 
     <div class="comment-section">
       <h2>Düşüncelerini Paylaş</h2>

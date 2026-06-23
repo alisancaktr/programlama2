@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Folio — Kültür Günlüğün{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0a0a;
+      --surface:  #141414;
+      --surface2: #1a1a1a;
+      --border:   rgba(255,255,255,0.07);
+      --accent:   #e8c97e;
+      --accent2:  #b87f4b;
+      --text:     #f0ece4;
+      --muted:    rgba(240,236,228,0.45);
+      --muted2:   rgba(240,236,228,0.22);
+      --film:     #7eb5e8;
+      --series:   #a87ee8;
+      --book:     #7ee8b0;
+      --r:        10px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain Overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px;
+    }
+
+    /* Navbar */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; gap: 2rem;
+      padding: 0 2.5rem;
+      height: 58px;
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-links {
+      display: flex; gap: 0.2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8rem; font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+    }
+    .nav-right {
+      display: flex; align-items: center; gap: 0.8rem; margin-left: auto;
+    }
+    .nav-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: #0a0a0a;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .nav-avatar:hover { border-color: var(--accent); }
+    .nav-username { font-size: 0.82rem; font-weight: 500; color: var(--muted); }
+    /* Profile Dropdown Container */
+    .profile-dropdown-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    /* Dropdown Menu */
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 200px;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 0.5rem 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+      z-index: 1000;
+    }
+    
+    .profile-dropdown.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .profile-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 1.2rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s, background 0.2s;
+    }
+    
+    .profile-dropdown a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .profile-dropdown .dropdown-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.4rem 0;
+    }
+    
+    .profile-dropdown a.dropdown-logout {
+      color: #e88d8d;
+    }
+    
+    .profile-dropdown a.dropdown-logout:hover {
+      color: #ff9e9e;
+      background: rgba(232, 141, 141, 0.08);
+    }
+
+    footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 3rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* Sayfa özel stillerinin ekleneceği yer */
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body>
+
+{% if request.user.is_authenticated %}
+<!-- ══ NAVBAR ══ -->
+<nav>
+  <a href="{% url 'dashboard' %}" class="nav-logo">Folio</a>
+  <ul class="nav-links">
+    <li><a href="{% url 'dashboard' %}" id="nav-kesfet">Keşfet</a></li>
+    <li><a href="{% url 'filmler' %}" id="nav-filmler">Filmler</a></li>
+    <li><a href="{% url 'diziler' %}" id="nav-diziler">Diziler</a></li>
+    <li><a href="{% url 'kitaplar' %}" id="nav-kitaplar">Kitaplar</a></li>
+    <li><a href="{% url 'kullanici_ara' %}" id="nav-sosyal">👥 Arkadaşlar</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-username">{{ user.username }}</span>
+    <div class="profile-dropdown-container">
+      <div class="nav-avatar" id="navAvatarBtn" title="{{ user.username }}">
+        {% if user.profil.profil_resmi %}
+          <img src="{{ user.profil.profil_resmi.url }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+        {% else %}
+          {{ user.username|slice:":2"|upper }}
+        {% endif %}
+      </div>
+      <div class="profile-dropdown" id="navProfileDropdown">
+        <a href="{% url 'profil_duzenle' %}">👤 Profili Düzenle</a>
+        <div class="dropdown-divider"></div>
+        <a href="{% url 'logout' %}" class="dropdown-logout">🚪 Oturumu Kapat</a>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<!-- Sayfa içeriğinin ekleneceği yer -->
+{% block content %}{% endblock %}
+
+{% if request.user.is_authenticated %}
+<footer>
+  <p>© 2026 Folio — <a href="#">Gizlilik</a> · <a href="#">Kullanım Koşulları</a></p>
+</footer>
+{% endif %}
+
+<script>
+  // Aktif menü öğesini otomatik işaretle
+  const currentPath = window.location.pathname;
+  if (currentPath === '/dashboard/') {
+    document.getElementById('nav-kesfet')?.classList.add('active');
+  } else if (currentPath.startsWith('/filmler/')) {
+    document.getElementById('nav-filmler')?.classList.add('active');
+  } else if (currentPath.startsWith('/diziler/')) {
+    document.getElementById('nav-diziler')?.classList.add('active');
+  } else if (currentPath.startsWith('/kitaplar/')) {
+    document.getElementById('nav-kitaplar')?.classList.add('active');
+  } else if (currentPath.startsWith('/sosyal/')) {
+    document.getElementById('nav-sosyal')?.classList.add('active');
+  }
+
+  // Global Arama Yönlendirmesi (Kullanıcı arama veya sayfa içi filtreleme için)
+  function globalSearch(query) {
+    if (window.applyGlobalSearchFilter) {
+      window.applyGlobalSearchFilter(query);
+    }
+  }
+
+  // Profile dropdown toggle
+  const avatarBtn = document.getElementById('navAvatarBtn');
+  const dropdown = document.getElementById('navProfileDropdown');
+
+  if (avatarBtn && dropdown) {
+    avatarBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdown.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!dropdown.contains(e.target) && e.target !== avatarBtn) {
+        dropdown.classList.remove('active');
+      }
+    });
+  }
+</script>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

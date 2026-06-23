@@ -41,7 +41,16 @@ def kitap_ekle_view(request):
         )
         return redirect('kitaplar')
 
-    return render(request, 'kitap_ekle.html')
+    kitaplar = Kitap.objects.filter(user=request.user)
+    okumak_istediklerim = kitaplar.filter(liste_durumu='okumak_istediklerim')
+    okuduklarim = kitaplar.filter(liste_durumu='okuduklarim')
+    
+    context = {
+        'okumak_istediklerim': okumak_istediklerim,
+        'okuduklarim': okuduklarim,
+        'open_modal': True
+    }
+    return render(request, 'kitaplar.html', context)
 
 # 3. KİTAP DETAY VE YORUM
 @login_required(login_url='login')

@@ -80,7 +80,6 @@
         <p class="yonetmen">{{ film.yazar|default:"Bilinmeyen Yönetmen" }}</p>
 
         <div class="meta-grid">
-          <div class="meta-box"><p class="label">Süre</p><p class="value">{{ film.sayfa_sayisi|default:"-" }} dk</p></div>
           <div class="meta-box"><p class="label">Yıl</p><p class="value">{{ film.basim_yili|default:"-" }}</p></div>
           <div class="meta-box"><p class="label">Durum</p><p class="value">{{ film.get_liste_durumu_display }}</p></div>
           <div class="meta-box"><p class="label">IMDb</p><p class="value">⭐ {{ film.puan|stringformat:".1f" }}</p></div>

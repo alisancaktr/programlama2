@@ -26,6 +26,9 @@ def dizi_ekle_view(request):
     if request.method == "POST":
         baslik = request.POST.get('baslik', '').strip()
         liste_durumu = request.POST.get('liste_durumu')
+        tur = request.POST.get('tur', '').strip()
+        ozet = request.POST.get('ozet', '').strip()
+        basim_yili = request.POST.get('basim_yili', '').strip()
 
         if baslik:
             try:
@@ -37,13 +40,23 @@ def dizi_ekle_view(request):
                 user=request.user,
                 baslik=baslik,
                 yonetmen=request.POST.get('yonetmen', ''),
-                tur=request.POST.get('tur', ''),
+                tur=tur,
                 puan=puan_val,
                 afis_url=request.POST.get('afis_url', ''),
-                liste_durumu=liste_durumu
+                liste_durumu=liste_durumu,
+                ozet=ozet,
+                basim_yili=basim_yili
             )
             return redirect('diziler')
-    return render(request, 'dizi_ekle.html')
+    izlediklerim = Dizi.objects.filter(user=request.user, liste_durumu='izlediklerim')
+    izlemek_istediklerim = Dizi.objects.filter(user=request.user, liste_durumu='izlemek_istediklerim')
+    
+    context = {
+        'izlediklerim': izlediklerim,
+        'izlemek_istediklerim': izlemek_istediklerim,
+        'open_modal': True
+    }
+    return render(request, 'diziler.html', context)
 
 @login_required(login_url='login')
 def dizi_detay_view(request, dizi_id):

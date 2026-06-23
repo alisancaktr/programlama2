@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .models import ArkadashlikIstegi
+from .models import ArkadashlikIstegi, Profil
 
 
 @login_required(login_url='login')
@@ -34,7 +34,6 @@ def kullanici_ara_view(request):
             durum = 'istek_gonderildi'
         elif alinan and alinan.durum == 'beklemede':
             durum = 'istek_alindi'
-            durum_obj = alinan
         else:
             durum = 'yabanci'
 
@@ -44,9 +43,30 @@ def kullanici_ara_view(request):
             'istek': gonderilen or alinan,
         })
 
+    # Eğer sorgu boşsa, kullanıcının mevcut arkadaşlarını ve bekleyen isteklerini de çekip gönderelim
+    bekleyen_istekler = []
+    arkadaslar = []
+    if not query:
+        bekleyen_istekler = ArkadashlikIstegi.objects.filter(
+            alici=request.user,
+            durum='beklemede'
+        ).order_by('-tarih')
+
+        arkadasliklar = ArkadashlikIstegi.objects.filter(
+            Q(gonderen=request.user) | Q(alici=request.user),
+            durum='kabul_edildi'
+        )
+        for a in arkadasliklar:
+            if a.gonderen == request.user:
+                arkadaslar.append(a.alici)
+            else:
+                arkadaslar.append(a.gonderen)
+
     return render(request, 'sosyal/kullanici_ara.html', {
         'query': query,
         'sonuclar': sonuclar_durum,
+        'bekleyen_istekler': bekleyen_istekler,
+        'arkadaslar': arkadaslar,
     })
 
 
@@ -75,7 +95,7 @@ def istek_kabul_view(request, istek_id):
     istek = get_object_or_404(ArkadashlikIstegi, id=istek_id, alici=request.user)
     istek.durum = 'kabul_edildi'
     istek.save()
-    return redirect('arkadas_istekleri')
+    return redirect('kullanici_ara')
 
 
 @login_required(login_url='login')
@@ -84,7 +104,7 @@ def istek_reddet_view(request, istek_id):
     istek = get_object_or_404(ArkadashlikIstegi, id=istek_id, alici=request.user)
     istek.durum = 'reddedildi'
     istek.save()
-    return redirect('arkadas_istekleri')
+    return redirect('kullanici_ara')
 
 
 @login_required(login_url='login')
@@ -133,4 +153,51 @@ def profil_view(request, kullanici_id):
         'dizi_yorumlari': dizi_yorumlari,
         'kitap_yorumlari': kitap_yorumlari,
         'iliski': iliski,
+    })
+
+
+@login_required(login_url='login')
+def profil_duzenle_view(request):
+    """Kullanıcının kendi profilini düzenleme sayfası"""
+    profil, created = Profil.objects.get_or_create(user=request.user)
+    hata_mesaji = None
+    basari_mesaji = None
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        ad_soyad = request.POST.get('ad_soyad', '').strip()
+        biyografi = request.POST.get('biyografi', '').strip()
+        profil_resmi = request.FILES.get('profil_resmi')
+        profil_resmi_sil = request.POST.get('profil_resmi_sil') == 'true'
+
+        if not username:
+            hata_mesaji = "Kullanıcı adı boş bırakılamaz."
+        elif username != request.user.username and User.objects.filter(username=username).exists():
+            hata_mesaji = "Bu kullanıcı adı zaten alınmış."
+        else:
+            try:
+                request.user.username = username
+                request.user.email = email
+                request.user.save()
+
+                profil.ad_soyad = ad_soyad
+                profil.biyografi = biyografi
+                
+                if profil_resmi:
+                    profil.profil_resmi = profil_resmi
+                elif profil_resmi_sil:
+                    if profil.profil_resmi:
+                        profil.profil_resmi.delete(save=False)
+                    profil.profil_resmi = None
+
+                profil.save()
+                basari_mesaji = "Profiliniz başarıyla güncellendi."
+            except Exception as e:
+                hata_mesaji = f"Bir hata oluştu: {str(e)}"
+
+    return render(request, 'sosyal/profil_duzenle.html', {
+        'profil': profil,
+        'hata_mesaji': hata_mesaji,
+        'basari_mesaji': basari_mesaji
     })
