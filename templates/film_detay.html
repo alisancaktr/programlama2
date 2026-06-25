@@ -65,7 +65,7 @@
 
   <nav>
     <div class="container">
-      <a href="{% url 'filmler' %}" class="back-btn">← Film Listeme Dön</a>
+      <a href="{% url 'filmler' %}" class="back-btn">← Geri</a>
     </div>
   </nav>
 
@@ -91,7 +91,8 @@
         </div>
 
         <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px;">
-            <form action="{% url 'film_sil' film.id %}" method="POST" onsubmit="return confirm('Bu filmi listenden silmek istediğine emin misin?');">
+            {%% if film.user == request.user %%}
+    <form action="{% url 'film_sil' film.id %}" method="POST" onsubmit="return confirm('Bu filmi listenden silmek istediğine emin misin?');">
                 {% csrf_token %}
                 <button type="submit" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                     🗑️ Filmi Sil
